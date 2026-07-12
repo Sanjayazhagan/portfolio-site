@@ -1,0 +1,54 @@
+[
+  {
+    "id": "ai",
+    "title": "AI",
+    "summary": "Exploring the intersection of LLMs, agentic workflows, and real-world utility.",
+    "philosophy": "I prioritize building AI systems that augment human capabilities safely and transparently.",
+    "logs": [
+      {
+        "id": "log-1",
+        "date": "2026-05-15",
+        "title": "Fine-Tuning Llama 3 for Code Generation",
+        "type": "Learning",
+        "content": "Spent the weekend exploring fine-tuning techniques for local code generation.\n\n### Why Llama 3?\nI chose the 8B parameter model because it offers the perfect balance of reasoning capability and VRAM requirements for local execution. Running inference on a single RTX 4090 was surprisingly smooth.\n\n### The Pipeline\n- Data Collection: Curated a dataset of 10k highly-rated open-source React components.\n- Pre-processing: Stripped out comments and standardized formatting.\n- LoRA Configuration: Set rank to 16 and alpha to 32.\n\n### Results\nAfter 4 epochs, the model successfully learned to output tailwind classes matching my specific design system. However, context window limitations meant it struggled with multi-file architectures. Next up: RAG integration!\n\n### Next Steps\n1. Build an LSP integration\n2. Test on a 70B model via cloud API\n3. Publish findings"
+      },
+      {
+        "id": "log-2",
+        "date": "2026-06-01",
+        "title": "Launched AI Copilot",
+        "type": "Project Build",
+        "content": "Deployed the first version of the AI IDE extension.",
+        "link": "https://github.com/sanjay/ai-copilot"
+      }
+    ]
+  },
+  {
+    "id": "full-stack",
+    "title": "Full-Stack",
+    "summary": "Building performant, accessible, and beautiful web experiences.",
+    "philosophy": "Why I prioritize Rust in the backend and React/Next.js on the frontend.",
+    "logs": [
+      {
+        "id": "log-3",
+        "date": "2025-10-10",
+        "title": "Migrating to Next.js App Router",
+        "type": "Learning",
+        "content": "Deep dive into RSCs and server actions."
+      }
+    ]
+  },
+  {
+    "id": "cloud",
+    "title": "Cloud",
+    "summary": "Designing resilient distributed systems for global scale.",
+    "philosophy": "Infrastructure as code is the only way to scale sustainably.",
+    "logs": []
+  },
+  {
+    "id": "web3",
+    "title": "Web3",
+    "summary": "Building decentralized, trustless financial infrastructure.",
+    "philosophy": "Smart contracts must be formally verified and aggressively audited.",
+    "logs": []
+  }
+]

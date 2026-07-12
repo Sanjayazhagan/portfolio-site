@@ -1,0 +1,23 @@
+[
+  {
+    "id": "1",
+    "role": "Software Engineering Intern",
+    "company": "DeepMind",
+    "period": "Summer 2026",
+    "description": "Working on Advanced Agentic Coding and distributed systems."
+  },
+  {
+    "id": "2",
+    "role": "Backend Developer Intern",
+    "company": "Stripe",
+    "period": "Fall 2025",
+    "description": "Developed low-latency microservices for payment processing in Go."
+  },
+  {
+    "id": "3",
+    "role": "Open Source Contributor",
+    "company": "Rust Foundation",
+    "period": "2024 - Present",
+    "description": "Contributed to the core compiler and asynchronous runtime crates."
+  }
+]

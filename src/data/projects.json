@@ -1,0 +1,62 @@
+[
+  {
+    "id": "1",
+    "slug": "distributed-scheduler",
+    "title": "Distributed Task Scheduler",
+    "description": "A high-throughput, fault-tolerant distributed task scheduler built with Rust and gRPC.",
+    "pillars": ["AI", "Cloud", "Distributed Systems"],
+    "link": "https://github.com/sanjay/distributed-scheduler",
+    "github": "https://github.com/sanjay/distributed-scheduler",
+    "linkedin": "https://linkedin.com/posts/sanjay_post1",
+    "date": "August 2023",
+    "image": "/projects/scheduler.jpg",
+    "video": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "live": "https://distributed-scheduler-demo.com",
+    "content": "### Key Features\n\n- **High Throughput:** Processes 10k tasks/sec.\n- **Fault Tolerant:** Raft consensus for high availability.\n- **Language Agnostic:** Exposes gRPC endpoints.\n\n### Tech Stack\n\n- Rust (Tokio, Tonic)\n- PostgreSQL\n- Redis"
+  },
+  {
+    "id": "2",
+    "slug": "ai-copilot",
+    "title": "AI Copilot for IDEs",
+    "description": "An AI-powered pair programming tool leveraging LLMs for real-time code suggestions.",
+    "pillars": ["AI", "Full-Stack"],
+    "link": "https://github.com/sanjay/ai-copilot",
+    "github": "https://github.com/sanjay/ai-copilot",
+    "linkedin": "https://linkedin.com/posts/sanjay_post2",
+    "date": "November 2023",
+    "image": "/projects/copilot.jpg",
+    "video": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "live": "https://ai-copilot-demo.com",
+    "content": "### Overview\n\nBuilt a highly responsive copilot extension for VS Code that streams LLM suggestions directly into your editor.\n\n### Key Features\n\n- **Context Aware:** Understands your entire workspace.\n- **Fast Inference:** Streamed responses via WebSockets.\n- **Secure:** Local processing mode available.\n\n### Tech Stack\n\n- TypeScript / Node.js\n- Python (FastAPI)\n- HuggingFace Transformers"
+  },
+  {
+    "id": "3",
+    "slug": "yield-aggregator",
+    "title": "DeFi Yield Aggregator",
+    "description": "A Web3 smart contract protocol to automatically compound yields across multiple chains.",
+    "pillars": ["Web3", "Full-Stack"],
+    "link": "https://github.com/sanjay/yield-aggregator",
+    "github": "https://github.com/sanjay/yield-aggregator",
+    "linkedin": "https://linkedin.com/posts/sanjay_post3",
+    "date": "February 2024",
+    "image": "/projects/web3.jpg",
+    "video": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "live": "https://yield-aggregator-demo.com",
+    "content": "### The Problem\n\nYield farming across multiple chains requires manually bridging, swapping, and staking tokens which costs high gas fees.\n\n### The Solution\n\nThis protocol automatically routes funds to the highest-yielding pools across Ethereum, Arbitrum, and Polygon.\n\n### Tech Stack\n\n- Solidity (Smart Contracts)\n- Next.js / React (Frontend)\n- Ethers.js / Wagmi"
+  },
+  {
+    "id": "4",
+    "slug": "infra-cli",
+    "title": "Cloud Infrastructure Provisioner",
+    "description": "Automated infrastructure-as-code CLI tool for multi-cloud deployments.",
+    "pillars": ["Cloud", "Full-Stack"],
+    "link": "https://github.com/sanjay/infra-cli",
+    "github": "https://github.com/sanjay/infra-cli",
+    "linkedin": "https://linkedin.com/posts/sanjay_post4",
+    "date": "May 2024",
+    "image": "/projects/cloud.jpg",
+    "video": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "live": "https://infra-cli-docs.com",
+    "content": "### Why I Built This\n\nManaging Terraform states for multi-region architectures was becoming a nightmare. This CLI abstracts the complexity of Terraform into simple YAML configuration files.\n\n### Key Features\n\n- **Multi-Cloud:** Supports AWS, GCP, and Azure out of the box.\n- **State Management:** Encrypted remote state locks.\n- **Rollbacks:** Instant rollback to previous infrastructure states.\n\n### Tech Stack\n\n- Go (Golang)\n- Cobra CLI\n- Terraform SDK"
+  }
+]
