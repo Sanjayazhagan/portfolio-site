@@ -8,7 +8,7 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { CommandPalette } from "@/components/CommandPalette";
 import { BookingModal } from "@/components/BookingModal";
 
-export function Header() {
+export function Header({ projects, pillars }: { projects: any[], pillars: any[] }) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
 
@@ -61,7 +61,7 @@ export function Header() {
         </GlassCard>
       </header>
 
-      <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} projects={projects} pillars={pillars} />
       <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
     </>
   );

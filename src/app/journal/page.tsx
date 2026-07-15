@@ -1,9 +1,11 @@
-import pillars from "@/data/pillars.json";
+import { getPillars } from "@/lib/data";
 import { GlassCard } from "@/components/ui/GlassCard";
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
 
-export default function JournalDirectory() {
+export default async function JournalDirectory() {
+  const pillars = await getPillars();
+
   return (
     <div className="py-24">
       <div className="mb-12 text-center">

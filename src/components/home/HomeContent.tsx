@@ -77,7 +77,7 @@ function SidebarNav() {
   );
 }
 
-export function HomeContent() {
+export function HomeContent({ projects, pillars, experiences }: { projects: any[], pillars: any[], experiences: any[] }) {
   const [activeTab, setActiveTab] = useState("All");
 
   return (
@@ -85,11 +85,11 @@ export function HomeContent() {
       <Hero />
       <div className="flex flex-col gap-12 w-full max-w-6xl mx-auto">
         <div className="flex flex-col items-center">
-          <PillarTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+          <PillarTabs activeTab={activeTab} setActiveTab={setActiveTab} pillars={pillars} />
         </div>
-        <BentoGrid activeTab={activeTab} />
-        <ExperienceTimeline />
-        <OverallJourney />
+        <BentoGrid activeTab={activeTab} projects={projects} pillars={pillars} />
+        <ExperienceTimeline experiences={experiences} />
+        <OverallJourney pillars={pillars} />
       </div>
       <SidebarNav />
     </div>

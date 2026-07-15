@@ -2,16 +2,17 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { GlassCard } from "@/components/ui/GlassCard";
-import projects from "@/data/projects.json";
-import pillars from "@/data/pillars.json";
+
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 
 interface BentoGridProps {
   activeTab: string;
+  projects: any[];
+  pillars: any[];
 }
 
-export function BentoGrid({ activeTab }: BentoGridProps) {
+export function BentoGrid({ activeTab, projects, pillars }: BentoGridProps) {
   const filteredProjects = activeTab === "All" 
     ? projects 
     : projects.filter(p => {
@@ -27,10 +28,11 @@ export function BentoGrid({ activeTab }: BentoGridProps) {
           {filteredProjects.map((project) => (
             <motion.div
               layout
-              initial={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
-              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-              exit={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
-              transition={{ duration: 0.3, type: "spring", bounce: 0.3 }}
+              initial={{ opacity: 1, y: 0 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
               key={project.id}
             >
               <Link href={`/project/${project.slug}`} className="block h-full outline-none">
@@ -48,7 +50,7 @@ export function BentoGrid({ activeTab }: BentoGridProps) {
                     <p className="text-sm text-slate-400 leading-relaxed mb-6">{project.description}</p>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {project.pillars.map(p => (
+                    {project.pillars.map((p: string) => (
                       <span key={p} className="text-[10px] font-bold uppercase tracking-wider text-cyan-400 bg-cyan-900/20 px-2.5 py-1 rounded-md border border-cyan-900/50">
                         {p}
                       </span>

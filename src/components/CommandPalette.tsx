@@ -4,16 +4,16 @@ import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X } from "lucide-react";
 import { GlassCard } from "./ui/GlassCard";
-import projects from "@/data/projects.json";
-import pillars from "@/data/pillars.json";
 import Link from "next/link";
 
 interface CommandPaletteProps {
   isOpen: boolean;
   onClose: () => void;
+  projects: any[];
+  pillars: any[];
 }
 
-export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
+export function CommandPalette({ isOpen, onClose, projects, pillars }: CommandPaletteProps) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {

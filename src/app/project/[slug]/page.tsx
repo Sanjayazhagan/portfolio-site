@@ -1,9 +1,9 @@
-import projects from "@/data/projects.json";
+import { getProjects } from "@/lib/data";
 import { notFound } from "next/navigation";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { ArrowUpRight, ExternalLink, Calendar } from "lucide-react";
 import Link from "next/link";
-import ReactMarkdown from "react-markdown";
+import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
 
 const GithubIcon = ({ size = 18 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -20,7 +20,14 @@ const LinkedinIcon = ({ size = 18 }: { size?: number }) => (
   </svg>
 );
 
-export function generateStaticParams() {
+const KaggleIcon = ({ size = 18 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M8 22V2M8 12l8-10M8 12l8 10" />
+  </svg>
+);
+
+export async function generateStaticParams() {
+  const projects = await getProjects();
   return projects.map((p) => ({
     slug: p.slug,
   }));
@@ -28,6 +35,7 @@ export function generateStaticParams() {
 
 export default async function ProjectPage(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
+  const projects = await getProjects();
   const project = projects.find((p) => p.slug === params.slug);
 
   if (!project) {
@@ -36,29 +44,30 @@ export default async function ProjectPage(props: { params: Promise<{ slug: strin
 
   return (
     <div className="py-24 w-full relative min-h-screen">
-      <div className="max-w-4xl mx-auto px-4 md:px-8">
-        <Link href="/#projects" className="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors mb-8 inline-block">
+      {/* Main Container - Full width of layout minus sidebar space on desktop */}
+      <div className="w-full xl:pr-[300px] 2xl:pr-12">
+        <Link href="/#projects" className="text-sm font-medium text-cyan-500 hover:text-cyan-400 transition-colors mb-8 inline-block">
           ← Back to Projects
         </Link>
         
         <div className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 mb-6">
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-6">
             {project.title}
           </h1>
           <div className="flex flex-wrap items-center gap-4 mb-6">
-            <div className="flex items-center gap-2 text-slate-500 text-sm font-medium border-r border-slate-200 pr-4">
+            <div className="flex items-center gap-2 text-slate-400 text-sm font-medium border-r border-slate-700 pr-4">
               <Calendar size={16} />
               <span>{project.date || "2024"}</span>
             </div>
             <div className="flex flex-wrap gap-2">
-              {project.pillars.map((p) => (
-                <span key={p} className="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-3 py-1 rounded-md border border-indigo-100/50">
+              {project.pillars.map((p: string) => (
+                <span key={p} className="text-xs font-bold uppercase tracking-wider text-cyan-400 bg-cyan-900/20 px-3 py-1 rounded-md border border-cyan-900/50">
                   {p}
                 </span>
               ))}
             </div>
           </div>
-          <p className="text-lg text-slate-600 leading-relaxed max-w-2xl">
+          <p className="text-lg text-slate-300 leading-relaxed max-w-2xl">
             {project.description}
           </p>
         </div>
@@ -66,8 +75,8 @@ export default async function ProjectPage(props: { params: Promise<{ slug: strin
         <div className="space-y-6">
           {project.content ? (
             <GlassCard className="p-8 h-full min-h-[400px]">
-              <div className="prose prose-lg prose-slate prose-a:text-indigo-600 prose-headings:text-slate-900 prose-headings:mt-0 prose-p:leading-relaxed prose-li:my-0 prose-ul:my-2 max-w-none">
-                <ReactMarkdown>{project.content}</ReactMarkdown>
+              <div className="prose prose-lg prose-invert prose-a:text-cyan-400 prose-headings:text-white prose-headings:mt-0 prose-p:leading-relaxed prose-li:my-0 prose-ul:my-2 !max-w-full w-full">
+                <MarkdownRenderer content={project.content} />
               </div>
             </GlassCard>
           ) : (
@@ -80,44 +89,53 @@ export default async function ProjectPage(props: { params: Promise<{ slug: strin
         {/* Mobile Links & Resources */}
         <div className="xl:hidden mt-12">
           <GlassCard className="p-5">
-            <h3 className="text-sm font-bold text-slate-900 mb-3 uppercase tracking-wider">Links & Resources</h3>
+            <h3 className="text-sm font-bold text-white mb-3 uppercase tracking-wider">Links & Resources</h3>
             <div className="space-y-2">
               {project.github && (
-                <a href={project.github} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200 group">
-                  <div className="flex items-center gap-3 text-slate-600 group-hover:text-slate-900">
+                <a href={project.github} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-700 group">
+                  <div className="flex items-center gap-3 text-slate-400 group-hover:text-white">
                     <GithubIcon size={16} />
                     <span className="font-medium text-xs">Source Code</span>
                   </div>
-                  <ArrowUpRight size={14} className="text-slate-400 group-hover:text-indigo-600" />
+                  <ArrowUpRight size={14} className="text-slate-500 group-hover:text-cyan-400" />
                 </a>
               )}
               {project.linkedin && (
-                <a href={project.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200 group">
-                  <div className="flex items-center gap-3 text-slate-600 group-hover:text-slate-900">
+                <a href={project.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-700 group">
+                  <div className="flex items-center gap-3 text-slate-400 group-hover:text-white">
                     <LinkedinIcon size={16} />
                     <span className="font-medium text-xs">LinkedIn Post</span>
                   </div>
-                  <ArrowUpRight size={14} className="text-slate-400 group-hover:text-indigo-600" />
+                  <ArrowUpRight size={14} className="text-slate-500 group-hover:text-cyan-400" />
                 </a>
               )}
               {project.video && (
-                <a href={project.video} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200 group">
-                  <div className="flex items-center gap-3 text-slate-600 group-hover:text-slate-900">
+                <a href={project.video} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-700 group">
+                  <div className="flex items-center gap-3 text-slate-400 group-hover:text-white">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polygon points="5 3 19 12 5 21 5 3" />
                     </svg>
                     <span className="font-medium text-xs">Video Demo</span>
                   </div>
-                  <ArrowUpRight size={14} className="text-slate-400 group-hover:text-indigo-600" />
+                  <ArrowUpRight size={14} className="text-slate-500 group-hover:text-cyan-400" />
                 </a>
               )}
               {project.live && (
-                <a href={project.live} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200 group">
-                  <div className="flex items-center gap-3 text-slate-600 group-hover:text-slate-900">
+                <a href={project.live} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-700 group">
+                  <div className="flex items-center gap-3 text-slate-400 group-hover:text-white">
                     <ExternalLink size={16} />
                     <span className="font-medium text-xs">Live Demo</span>
                   </div>
-                  <ArrowUpRight size={14} className="text-slate-400 group-hover:text-indigo-600" />
+                  <ArrowUpRight size={14} className="text-slate-500 group-hover:text-cyan-400" />
+                </a>
+              )}
+              {project.kaggle && (
+                <a href={project.kaggle} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-700 group">
+                  <div className="flex items-center gap-3 text-slate-400 group-hover:text-white">
+                    <KaggleIcon size={16} />
+                    <span className="font-medium text-xs">Kaggle Dataset / Notebook</span>
+                  </div>
+                  <ArrowUpRight size={14} className="text-slate-500 group-hover:text-cyan-400" />
                 </a>
               )}
             </div>
@@ -128,44 +146,53 @@ export default async function ProjectPage(props: { params: Promise<{ slug: strin
       {/* Desktop Links & Resources - Fixed Right */}
       <div className="hidden xl:block fixed top-32 right-8 2xl:right-24 w-64 z-10">
         <GlassCard className="p-5 shadow-xl">
-          <h3 className="text-sm font-bold text-slate-900 mb-3 uppercase tracking-wider">Links & Resources</h3>
+          <h3 className="text-sm font-bold text-white mb-3 uppercase tracking-wider">Links & Resources</h3>
           <div className="space-y-2">
             {project.github && (
-              <a href={project.github} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200 group">
-                <div className="flex items-center gap-3 text-slate-600 group-hover:text-slate-900">
+              <a href={project.github} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-700 group">
+                <div className="flex items-center gap-3 text-slate-400 group-hover:text-white">
                   <GithubIcon size={16} />
                   <span className="font-medium text-xs">Source Code</span>
                 </div>
-                <ArrowUpRight size={14} className="text-slate-400 group-hover:text-indigo-600" />
+                <ArrowUpRight size={14} className="text-slate-500 group-hover:text-cyan-400" />
               </a>
             )}
             {project.linkedin && (
-              <a href={project.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200 group">
-                <div className="flex items-center gap-3 text-slate-600 group-hover:text-slate-900">
+              <a href={project.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-700 group">
+                <div className="flex items-center gap-3 text-slate-400 group-hover:text-white">
                   <LinkedinIcon size={16} />
                   <span className="font-medium text-xs">LinkedIn Post</span>
                 </div>
-                <ArrowUpRight size={14} className="text-slate-400 group-hover:text-indigo-600" />
+                <ArrowUpRight size={14} className="text-slate-500 group-hover:text-cyan-400" />
               </a>
             )}
             {project.video && (
-              <a href={project.video} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200 group">
-                <div className="flex items-center gap-3 text-slate-600 group-hover:text-slate-900">
+              <a href={project.video} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-700 group">
+                <div className="flex items-center gap-3 text-slate-400 group-hover:text-white">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polygon points="5 3 19 12 5 21 5 3" />
                   </svg>
                   <span className="font-medium text-xs">Video Demo</span>
                 </div>
-                <ArrowUpRight size={14} className="text-slate-400 group-hover:text-indigo-600" />
+                <ArrowUpRight size={14} className="text-slate-500 group-hover:text-cyan-400" />
               </a>
             )}
             {project.live && (
-              <a href={project.live} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200 group">
-                <div className="flex items-center gap-3 text-slate-600 group-hover:text-slate-900">
+              <a href={project.live} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-700 group">
+                <div className="flex items-center gap-3 text-slate-400 group-hover:text-white">
                   <ExternalLink size={16} />
                   <span className="font-medium text-xs">Live Demo</span>
                 </div>
-                <ArrowUpRight size={14} className="text-slate-400 group-hover:text-indigo-600" />
+                <ArrowUpRight size={14} className="text-slate-500 group-hover:text-cyan-400" />
+              </a>
+            )}
+            {project.kaggle && (
+              <a href={project.kaggle} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-700 group">
+                <div className="flex items-center gap-3 text-slate-400 group-hover:text-white">
+                  <KaggleIcon size={16} />
+                  <span className="font-medium text-xs">Kaggle Dataset / Notebook</span>
+                </div>
+                <ArrowUpRight size={14} className="text-slate-500 group-hover:text-cyan-400" />
               </a>
             )}
           </div>

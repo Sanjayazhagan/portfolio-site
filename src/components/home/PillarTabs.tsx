@@ -2,14 +2,15 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import pillars from "@/data/pillars.json";
+
 
 interface PillarTabsProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  pillars: any[];
 }
 
-export function PillarTabs({ activeTab, setActiveTab }: PillarTabsProps) {
+export function PillarTabs({ activeTab, setActiveTab, pillars }: PillarTabsProps) {
   const tabs = [{ id: "All", title: "All" }, ...pillars];
 
   return (

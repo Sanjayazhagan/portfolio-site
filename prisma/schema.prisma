@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String @id @default(cuid())
+  email          String @unique
+  hashedPassword String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Project {
+  id          String @id @default(cuid())
+  slug        String @unique
+  title       String
+  description String
+  pillars     String // Stored as JSON string
+  link        String?
+  github      String?
+  linkedin    String?
+  date        String
+  image       String?
+  video       String?
+  live        String?
+  kaggle      String?
+  content     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Pillar {
+  id         String @id // e.g. "ai", "full-stack"
+  title      String
+  summary    String
+  philosophy String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Log {
+  id        String   @id @default(cuid())
+  date      String
+  title     String
+  type      String
+  content   String
+  link      String?
+  github    String?
+  linkedin  String?
+  live      String?
+  kaggle    String?
+  pillars   String   @default("[]") // Stored as JSON string array
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Experience {
+  id          String @id @default(cuid())
+  role        String
+  company     String
+  period      String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

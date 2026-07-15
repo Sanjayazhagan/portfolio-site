@@ -5,20 +5,24 @@ import { CodeXml, Database, Cloud, BrainCircuit } from "lucide-react";
 
 export function Hero() {
   return (
-    <section className="relative w-screen left-1/2 -translate-x-1/2 min-h-[85vh] -mt-12 mb-0 flex flex-col items-center justify-center text-center overflow-hidden">
-      {/* Background Video */}
+    <section className="relative w-screen left-1/2 -translate-x-1/2 min-h-[85vh] -mt-24 pt-24 mb-0 flex flex-col items-center justify-center text-center overflow-hidden">
+      {/* Background Video with CSS Mask to fade out at the bottom */}
       <video
         autoPlay
         loop
         muted
         playsInline
         className="absolute inset-0 w-full h-full object-cover z-0"
+        style={{ 
+          maskImage: "linear-gradient(to bottom, black 50%, transparent 100%)", 
+          WebkitMaskImage: "linear-gradient(to bottom, black 50%, transparent 100%)" 
+        }}
       >
         <source src="/1000109720.mp4" type="video/mp4" />
       </video>
 
-      {/* Dark gradient overlay that completely fades to the background color at the bottom */}
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/50 to-slate-950 z-0"></div>
+      {/* Dark gradient overlay to fade the top into the header and darken the video */}
+      <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-950/20 to-transparent z-0 pointer-events-none"></div>
 
       {/* Content */}
       <motion.div
