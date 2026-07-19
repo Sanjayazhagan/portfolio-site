@@ -5,6 +5,7 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import ReactMarkdown from "react-markdown";
 import { ArrowUpRight, BookOpenCheck, Code } from "lucide-react";
 import { RoverSprite } from "./RoverSprite";
+import { usePostHog } from 'posthog-js/react';
 
 interface Log {
   id: string;
@@ -43,6 +44,7 @@ const KaggleIcon = ({ size = 18 }: { size?: number }) => (
 export function LogTimeline({ logs }: { logs: Log[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const posthog = usePostHog();
   const [stickyHeight, setStickyHeight] = useState(600);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isParked, setIsParked] = useState(true);
@@ -219,22 +221,22 @@ export function LogTimeline({ logs }: { logs: Log[] }) {
                   </h3>
                   <div className="flex gap-2 flex-wrap flex-shrink-0">
                     {log.github && (
-                       <a href={log.github} target="_blank" rel="noopener noreferrer" className="p-2 bg-cyan-900/30 text-cyan-400 rounded-xl hover:bg-cyan-500 hover:text-white transition-colors shadow-sm" title="GitHub">
+                       <a href={log.github} target="_blank" rel="noopener noreferrer" onClick={() => posthog?.capture('project_link_clicked', { type: 'github', url: log.github, log_title: log.title })} className="p-2 bg-cyan-900/30 text-cyan-400 rounded-xl hover:bg-cyan-500 hover:text-white transition-colors shadow-sm" title="GitHub">
                          <GithubIcon size={16} />
                        </a>
                     )}
                     {log.linkedin && (
-                       <a href={log.linkedin} target="_blank" rel="noopener noreferrer" className="p-2 bg-cyan-900/30 text-cyan-400 rounded-xl hover:bg-cyan-500 hover:text-white transition-colors shadow-sm" title="LinkedIn">
+                       <a href={log.linkedin} target="_blank" rel="noopener noreferrer" onClick={() => posthog?.capture('project_link_clicked', { type: 'linkedin', url: log.linkedin, log_title: log.title })} className="p-2 bg-cyan-900/30 text-cyan-400 rounded-xl hover:bg-cyan-500 hover:text-white transition-colors shadow-sm" title="LinkedIn">
                          <LinkedinIcon size={16} />
                        </a>
                     )}
                     {log.kaggle && (
-                       <a href={log.kaggle} target="_blank" rel="noopener noreferrer" className="p-2 bg-cyan-900/30 text-cyan-400 rounded-xl hover:bg-cyan-500 hover:text-white transition-colors shadow-sm" title="Kaggle">
+                       <a href={log.kaggle} target="_blank" rel="noopener noreferrer" onClick={() => posthog?.capture('project_link_clicked', { type: 'kaggle', url: log.kaggle, log_title: log.title })} className="p-2 bg-cyan-900/30 text-cyan-400 rounded-xl hover:bg-cyan-500 hover:text-white transition-colors shadow-sm" title="Kaggle">
                          <KaggleIcon size={16} />
                        </a>
                     )}
                     {(log.live || log.link) && (
-                       <a href={log.live || log.link!} target="_blank" rel="noopener noreferrer" className="p-2 bg-cyan-900/30 text-cyan-400 rounded-xl hover:bg-cyan-500 hover:text-white transition-colors shadow-sm" title="Link">
+                       <a href={log.live || log.link!} target="_blank" rel="noopener noreferrer" onClick={() => posthog?.capture('project_link_clicked', { type: 'live', url: log.live || log.link, log_title: log.title })} className="p-2 bg-cyan-900/30 text-cyan-400 rounded-xl hover:bg-cyan-500 hover:text-white transition-colors shadow-sm" title="Link">
                          <ArrowUpRight size={16} />
                        </a>
                     )}

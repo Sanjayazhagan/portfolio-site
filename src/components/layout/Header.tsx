@@ -7,10 +7,12 @@ import { Search } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { CommandPalette } from "@/components/CommandPalette";
 import { BookingModal } from "@/components/BookingModal";
+import { usePostHog } from 'posthog-js/react';
 
 export function Header({ projects, pillars }: { projects: any[], pillars: any[] }) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const posthog = usePostHog();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -48,11 +50,19 @@ export function Header({ projects, pillars }: { projects: any[], pillars: any[] 
             <Link href="/journal" className="text-sm font-medium text-slate-300 hover:text-cyan-400 transition-colors">
               Journal
             </Link>
-            <button className="text-sm font-medium text-slate-300 hover:text-cyan-400 transition-colors hidden md:block">
+            <button 
+              onClick={() => {
+                posthog?.capture('resume_clicked');
+              }}
+              className="text-sm font-medium text-slate-300 hover:text-cyan-400 transition-colors hidden md:block"
+            >
               Resume
             </button>
             <button 
-              onClick={() => setIsBookingOpen(true)}
+              onClick={() => {
+                posthog?.capture('book_call_clicked', { location: 'header' });
+                setIsBookingOpen(true);
+              }}
               className="text-sm font-medium bg-cyan-600 text-white px-5 py-2 rounded-full shadow-sm hover:bg-cyan-500 hover:shadow-md transition-all active:scale-95"
             >
               Book a Call
