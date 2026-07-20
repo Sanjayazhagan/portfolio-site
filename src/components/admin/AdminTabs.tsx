@@ -13,7 +13,7 @@ export function AdminTabs({ projects, pillars, experiences, logs, userEmail }: {
 
   return (
     <div>
-      <div className="flex space-x-1 bg-slate-900/50 p-1 rounded-xl mb-8 border border-slate-800">
+      <div className="flex space-x-1 bg-slate-900/50 p-1 rounded-xl mb-8 border border-slate-800 overflow-x-auto no-scrollbar whitespace-nowrap">
         {tabs.map((tab) => (
           <button
             key={tab}
