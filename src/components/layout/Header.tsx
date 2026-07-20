@@ -7,11 +7,13 @@ import { Search } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { CommandPalette } from "@/components/CommandPalette";
 import { BookingModal } from "@/components/BookingModal";
+import { ResumeModal } from "@/components/resume/ResumeModal";
 import { usePostHog } from 'posthog-js/react';
 
 export function Header({ projects, pillars }: { projects: any[], pillars: any[] }) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [isResumeOpen, setIsResumeOpen] = useState(false);
   const posthog = usePostHog();
 
   useEffect(() => {
@@ -52,7 +54,8 @@ export function Header({ projects, pillars }: { projects: any[], pillars: any[] 
             </Link>
             <button 
               onClick={() => {
-                posthog?.capture('resume_clicked');
+                posthog?.capture('resume_modal_opened');
+                setIsResumeOpen(true);
               }}
               className="text-xs md:text-sm font-medium text-slate-300 hover:text-cyan-400 transition-colors hidden md:block"
             >
@@ -73,6 +76,7 @@ export function Header({ projects, pillars }: { projects: any[], pillars: any[] 
 
       <CommandPalette isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} projects={projects} pillars={pillars} />
       <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
+      <ResumeModal isOpen={isResumeOpen} onClose={() => setIsResumeOpen(false)} />
     </>
   );
 }
