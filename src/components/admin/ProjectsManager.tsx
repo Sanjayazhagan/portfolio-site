@@ -4,18 +4,22 @@ import { useState } from "react";
 import { saveProject, deleteProject } from "@/app/admin/actions";
 import { GlassCard } from "@/components/ui/GlassCard";
 
-export function ProjectsManager({ initialProjects }: { initialProjects: any[] }) {
+export function ProjectsManager({ initialProjects, availablePillars }: { initialProjects: any[], availablePillars: any[] }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<any>({});
   
   const handleEdit = (project: any) => {
     setEditingId(project.id);
-    setFormData(project);
+    setFormData({
+      ...project,
+      pillars: typeof project.pillars === "string" ? JSON.parse(project.pillars) : (project.pillars || []),
+      tags: typeof project.tags === "string" ? JSON.parse(project.tags) : (project.tags || [])
+    });
   };
   
   const handleNew = () => {
     setEditingId("new");
-    setFormData({ title: "", slug: "", description: "", date: "", pillars: [], content: "" });
+    setFormData({ title: "", slug: "", description: "", date: new Date().toISOString().split('T')[0], pillars: [], tags: [], content: "" });
   };
   
   const handleSave = async () => {
@@ -29,15 +33,43 @@ export function ProjectsManager({ initialProjects }: { initialProjects: any[] })
     }
   };
 
+  const togglePillar = (pillarId: string) => {
+    setFormData((prev: any) => {
+      const current = prev.pillars || [];
+      if (current.includes(pillarId)) {
+        return { ...prev, pillars: current.filter((id: string) => id !== pillarId) };
+      } else {
+        return { ...prev, pillars: [...current, pillarId] };
+      }
+    });
+  };
+
   if (editingId) {
     return (
       <GlassCard className="p-6">
         <h3 className="text-xl font-bold text-white mb-4">{editingId === "new" ? "New Project" : "Edit Project"}</h3>
         <div className="space-y-4">
           <input className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white" placeholder="Title" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} />
-          <input className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white" placeholder="Slug" value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} />
+          <input className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white" placeholder="Slug (e.g. my-cool-project)" value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} />
+          <input className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white" type="date" placeholder="Date" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} />
           <textarea className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white" placeholder="Description" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
-          <input className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white" placeholder="Pillars (comma separated)" value={formData.pillars?.join(", ")} onChange={e => setFormData({...formData, pillars: e.target.value.split(",").map(s => s.trim())})} />
+          
+          <div className="space-y-2">
+            <span className="text-slate-400 text-sm">Assign to Pillars:</span>
+            <div className="flex flex-wrap gap-2">
+              {availablePillars?.map(p => (
+                <button
+                  key={p.id}
+                  onClick={() => togglePillar(p.id)}
+                  className={`px-3 py-1 rounded text-sm ${formData.pillars?.includes(p.id) ? 'bg-cyan-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}
+                >
+                  {p.title}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <input className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white" placeholder="Tags (comma separated, e.g. React, Python, gRPC)" value={formData.tags?.join(", ")} onChange={e => setFormData({...formData, tags: e.target.value.split(",").map(s => s.trim()).filter(Boolean)})} />
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white" placeholder="GitHub URL" value={formData.github || ""} onChange={e => setFormData({...formData, github: e.target.value})} />

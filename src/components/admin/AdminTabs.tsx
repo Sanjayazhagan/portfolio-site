@@ -30,10 +30,10 @@ export function AdminTabs({ projects, pillars, experiences, logs, userEmail }: {
       </div>
 
       <div className="mt-6">
-        {activeTab === "Projects" && <ProjectsManager initialProjects={projects} />}
+        {activeTab === "Projects" && <ProjectsManager initialProjects={projects} availablePillars={pillars} />}
         {activeTab === "Experience" && <ExperienceManager initialExperiences={experiences} />}
         {activeTab === "Pillars" && <PillarsManager initialPillars={pillars} />}
-        {activeTab === "Journeys" && <LogsManager initialLogs={logs} availablePillars={pillars} />}
+        {activeTab === "Journeys" && <LogsManager initialLogs={logs} availablePillars={pillars} availableProjects={projects} />}
         {activeTab === "Settings" && <SettingsManager userEmail={userEmail} />}
       </div>
     </div>

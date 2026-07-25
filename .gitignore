@@ -44,3 +44,6 @@ next-env.d.ts
 *.db
 *.db-journal
 prisma/dev.db
+
+# ignore resumes
+public/resume*.pdf

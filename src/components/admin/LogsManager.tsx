@@ -4,7 +4,7 @@ import { useState } from "react";
 import { saveLog, deleteLog } from "@/app/admin/actions";
 import { GlassCard } from "@/components/ui/GlassCard";
 
-export function LogsManager({ initialLogs, availablePillars }: { initialLogs: any[], availablePillars: any[] }) {
+export function LogsManager({ initialLogs, availablePillars, availableProjects }: { initialLogs: any[], availablePillars: any[], availableProjects: any[] }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<any>({});
   
@@ -13,12 +13,13 @@ export function LogsManager({ initialLogs, availablePillars }: { initialLogs: an
     setFormData({
       ...log,
       pillars: typeof log.pillars === "string" ? JSON.parse(log.pillars) : (log.pillars || []),
+      projectIds: typeof log.projectIds === "string" ? JSON.parse(log.projectIds) : (log.projectIds || []),
     });
   };
   
   const handleNew = () => {
     setEditingId("new");
-    setFormData({ title: "", date: new Date().toISOString().split('T')[0], type: "Learning", content: "", pillars: [], link: "", github: "", linkedin: "", live: "", kaggle: "" });
+    setFormData({ title: "", date: new Date().toISOString().split('T')[0], type: "Learning", content: "", pillars: [], projectIds: [], link: "", github: "", linkedin: "", live: "", kaggle: "" });
   };
   
   const handleSave = async () => {
@@ -43,6 +44,17 @@ export function LogsManager({ initialLogs, availablePillars }: { initialLogs: an
     });
   };
 
+  const toggleProject = (projectId: string) => {
+    setFormData((prev: any) => {
+      const current = prev.projectIds || [];
+      if (current.includes(projectId)) {
+        return { ...prev, projectIds: current.filter((id: string) => id !== projectId) };
+      } else {
+        return { ...prev, projectIds: [...current, projectId] };
+      }
+    });
+  };
+
   if (editingId) {
     return (
       <GlassCard className="p-6">
@@ -57,7 +69,7 @@ export function LogsManager({ initialLogs, availablePillars }: { initialLogs: an
           <div className="space-y-2">
             <span className="text-slate-400 text-sm">Assign to Pillars:</span>
             <div className="flex flex-wrap gap-2">
-              {availablePillars.map(p => (
+              {availablePillars?.map(p => (
                 <button
                   key={p.id}
                   onClick={() => togglePillar(p.id)}
@@ -67,6 +79,43 @@ export function LogsManager({ initialLogs, availablePillars }: { initialLogs: an
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <span className="text-slate-400 text-sm">Link to Projects:</span>
+            <select
+              className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white outline-none"
+              onChange={(e) => {
+                if (e.target.value) {
+                  toggleProject(e.target.value);
+                  e.target.value = ""; // reset dropdown
+                }
+              }}
+              defaultValue=""
+            >
+              <option value="" disabled>Select a project to link...</option>
+              {availableProjects?.filter(p => !formData.projectIds?.includes(p.id)).map(p => (
+                <option key={p.id} value={p.id}>{p.title}</option>
+              ))}
+            </select>
+            
+            {/* Selected Project Chips */}
+            {formData.projectIds?.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {formData.projectIds.map((id: string) => {
+                  const p = availableProjects?.find(proj => proj.id === id);
+                  if (!p) return null;
+                  return (
+                    <div key={id} className="flex items-center gap-1 bg-purple-900/50 text-purple-200 px-3 py-1 rounded text-sm border border-purple-700/50">
+                      <span>{p.title}</span>
+                      <button onClick={() => toggleProject(id)} className="ml-1 text-purple-400 hover:text-purple-200 focus:outline-none">
+                        &times;
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">

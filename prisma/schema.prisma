@@ -21,6 +21,7 @@ model Project {
   title       String
   description String
   pillars     String // Stored as JSON string
+  tags        String   @default("[]") // Stored as JSON string array
   link        String?
   github      String?
   linkedin    String?
@@ -55,6 +56,7 @@ model Log {
   live      String?
   kaggle    String?
   pillars   String   @default("[]") // Stored as JSON string array
+  projectIds String  @default("[]") // Stored as JSON string array
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

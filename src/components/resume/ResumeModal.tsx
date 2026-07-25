@@ -8,7 +8,16 @@ import { usePostHog } from "posthog-js/react";
 interface ResumeData {
   name: string;
   email: string;
+  phone?: string;
+  github?: string;
+  linkedin?: string;
   summary: string;
+  education?: {
+    institution: string;
+    degree: string;
+    period: string;
+    gpa?: string;
+  }[];
   skills: string[];
   experience: {
     role: string;
@@ -37,8 +46,11 @@ function ResumePreview({ data }: { data: ResumeData }) {
       {/* Header */}
       <div className="text-center mb-6 border-b-2 border-black pb-4">
         <h1 className="text-2xl font-bold tracking-wide uppercase mb-1">{data.name}</h1>
-        <div className="text-sm text-gray-700 flex items-center justify-center gap-1 flex-wrap">
+        <div className="text-sm text-gray-700 flex items-center justify-center gap-2 flex-wrap">
+          {data.phone && <span>{data.phone} • </span>}
           <span>{data.email}</span>
+          {data.github && <span> • <a href={`https://${data.github}`} className="text-blue-700 underline">{data.github}</a></span>}
+          {data.linkedin && <span> • <a href={`https://${data.linkedin}`} className="text-blue-700 underline">LinkedIn</a></span>}
         </div>
       </div>
 
@@ -49,6 +61,27 @@ function ResumePreview({ data }: { data: ResumeData }) {
             Professional Summary
           </h2>
           <p className="text-[10.5pt] text-gray-800">{data.summary}</p>
+        </section>
+      )}
+
+      {/* Education */}
+      {data.education && data.education.length > 0 && (
+        <section className="mb-5">
+          <h2 className="text-sm font-bold uppercase tracking-widest border-b border-gray-400 pb-1 mb-2">
+            Education
+          </h2>
+          {data.education.map((edu, i) => (
+            <div key={i} className="mb-2">
+              <div className="flex justify-between items-baseline">
+                <h3 className="font-bold text-[11pt]">{edu.institution}</h3>
+                <span className="text-[9.5pt] text-gray-600 italic whitespace-nowrap ml-4">{edu.period}</span>
+              </div>
+              <div className="flex justify-between items-baseline">
+                <p className="text-[10pt] text-gray-800 italic">{edu.degree}</p>
+                {edu.gpa && <span className="text-[9.5pt] text-gray-600">{edu.gpa}</span>}
+              </div>
+            </div>
+          ))}
         </section>
       )}
 
@@ -166,97 +199,30 @@ export function ResumeModal({ isOpen, onClose }: ResumeModalProps) {
     }
   };
 
-  const handleDownloadPDF = () => {
+  const handleDownloadPDF = async () => {
     if (!resumeData) return;
-
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) return;
-
-    // Build project links dynamically
-    const buildProjectLinks = (links?: { github?: string | null; live?: string | null; kaggle?: string | null }) => {
-      if (!links) return "";
-      return Object.entries(links)
-        .filter(([, v]) => v)
-        .map(([label, url]) => `<a class="project-link" href="${url}">[${label}]</a>`)
-        .join(" ");
-    };
-
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>${resumeData.name} - Resume</title>
-        <style>
-          @page { margin: 0.5in; size: letter; }
-          * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { font-family: 'Georgia', 'Times New Roman', serif; font-size: 11pt; line-height: 1.45; color: #1a1a1a; }
-          .header { text-align: center; margin-bottom: 16px; border-bottom: 2px solid #000; padding-bottom: 12px; }
-          .header h1 { font-size: 20pt; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
-          .header .contact { font-size: 9.5pt; color: #444; }
-          .header .contact a { color: #1a4a8a; text-decoration: underline; }
-          section { margin-bottom: 14px; }
-          section h2 { font-size: 10pt; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid #999; padding-bottom: 3px; margin-bottom: 8px; }
-          .entry { margin-bottom: 10px; }
-          .entry-header { display: flex; justify-content: space-between; align-items: baseline; }
-          .entry-header h3 { font-size: 11pt; font-weight: bold; }
-          .entry-header .period { font-size: 9.5pt; color: #555; font-style: italic; white-space: nowrap; margin-left: 12px; }
-          .entry .company { font-size: 10pt; color: #555; font-style: italic; }
-          .project-link { font-size: 9pt; color: #1a4a8a; text-decoration: underline; margin-left: 6px; }
-          ul { list-style-type: disc; margin-left: 20px; margin-top: 4px; }
-          ul li { font-size: 10.5pt; color: #2a2a2a; margin-bottom: 2px; }
-          .skills p, .summary p { font-size: 10.5pt; color: #2a2a2a; }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <h1>${resumeData.name}</h1>
-          <div class="contact">${resumeData.email}</div>
-        </div>
-
-        ${resumeData.summary ? `
-        <section class="summary">
-          <h2>Professional Summary</h2>
-          <p>${resumeData.summary}</p>
-        </section>` : ""}
-
-        ${resumeData.skills?.length ? `
-        <section class="skills">
-          <h2>Technical Skills</h2>
-          <p>${resumeData.skills.join(" &bull; ")}</p>
-        </section>` : ""}
-
-        ${resumeData.experience?.length ? `
-        <section>
-          <h2>Experience</h2>
-          ${resumeData.experience.map((exp) => `
-            <div class="entry">
-              <div class="entry-header">
-                <h3>${exp.role}</h3>
-                <span class="period">${exp.period}</span>
-              </div>
-              <div class="company">${exp.company}</div>
-              <ul>${exp.bullets.map((b) => `<li>${b}</li>`).join("")}</ul>
-            </div>
-          `).join("")}
-        </section>` : ""}
-
-        ${resumeData.projects?.length ? `
-        <section>
-          <h2>Projects</h2>
-          ${resumeData.projects.map((proj) => `
-            <div class="entry">
-              <div class="entry-header">
-                <h3>${proj.title} ${buildProjectLinks(proj.links)}</h3>
-              </div>
-              <ul>${proj.bullets.map((b) => `<li>${b}</li>`).join("")}</ul>
-            </div>
-          `).join("")}
-        </section>` : ""}
-      </body>
-      </html>
-    `);
-    printWindow.document.close();
-    setTimeout(() => printWindow.print(), 300);
+    
+    setStatus("loading");
+    try {
+      const { pdf } = await import("@react-pdf/renderer");
+      const { ResumePDFDocument } = await import("./ResumePDF");
+      
+      const blob = await pdf(<ResumePDFDocument data={resumeData} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${resumeData.name.replace(/\s+/g, "_")}_Resume.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      setStatus("success");
+    } catch (err: any) {
+      console.error("Failed to generate PDF Blob:", err);
+      setErrorMessage("Failed to generate PDF file.");
+      setStatus("error");
+    }
   };
 
   if (!isOpen) return null;

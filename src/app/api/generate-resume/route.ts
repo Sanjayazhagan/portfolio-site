@@ -73,7 +73,11 @@ export async function POST(req: Request) {
       prisma.user.findMany({ select: { email: true } }),
     ]);
 
-    const userEmail = users[0]?.email || "email@example.com";
+    // Ensure we use the correct email for the portfolio owner, avoiding local admin seed data
+    let userEmail = "sanjayazhagan@gmail.com";
+    const realUser = users.find(u => u.email === "sanjayazhagan@gmail.com");
+    if (realUser) userEmail = realUser.email;
+    else if (users.length > 0 && !users[0].email.includes("admin")) userEmail = users[0].email;
 
     // Build a full context object from the database
     const portfolioContext = {
@@ -99,44 +103,67 @@ export async function POST(req: Request) {
         summary: p.summary,
       })),
       email: userEmail,
+      phone: "9487704504",
+      github: "github.com/Sanjayazhagan",
+      linkedin: "linkedin.com/in/sanjay-azhagan-85a8622a6",
+      education: [
+        {
+          institution: "IIITDM Kancheepuram",
+          degree: "Bachelor of Technology in Computer Science and Engineering",
+          period: "Expected May 2028",
+          gpa: "CGPA: 8.0/10.0"
+        }
+      ]
     };
 
-    // Construct the prompt — everything comes from the database
-    const prompt = `You are an expert resume writer. I need a tailored, ATS-friendly resume.
+    // Construct the prompt — integrating ATS optimization best practices
+    const prompt = `You are an expert resume writer specializing in ATS (Applicant Tracking System) optimization. I need a tailored, highly optimized resume.
 
-Here is the job description I am targeting:
+Here is the exact job description I am targeting:
 """
 ${jobDescription}
 """
 
-Here is my complete portfolio data pulled from my database:
+Here is my complete portfolio and personal data pulled from my database:
 ${JSON.stringify(portfolioContext, null, 2)}
 
-INSTRUCTIONS:
-1. My name can be inferred from my email: "${userEmail}". Format it properly (capitalize first/last name).
-2. Select the most relevant projects and experiences that match the job description.
-3. Use my pillar areas (${pillars.map((p) => p.title).join(", ")}) to understand my strengths and specializations.
-4. Tailor all bullet points to highlight keywords, technologies, and skills from the job description.
-5. Include any relevant links (github, live, kaggle, linkedin) from the projects you select.
-6. Output ONLY valid JSON matching this exact schema (no markdown, no explanation, just raw JSON):
+ATS OPTIMIZATION INSTRUCTIONS:
+1. EXACT KEYWORD MATCHING: You must use the exact phrasing found in the job description (e.g. if it says "Customer Relationship Management", use that, not just "CRM"). Include both acronyms and full terms to be safe.
+2. CONTEXTUALIZE KEYWORDS: Do not just stuff keywords in the skills section. Seamlessly weave the most critical hard skills and tools from the job description directly into the bullet points of my Experience and Projects.
+3. MEASURABLE IMPACT: Rewrite my bullet points to highlight achievements using metrics, percentages, or concrete results wherever reasonably possible based on my provided data.
+4. STANDARD SECTION HEADERS: Strictly use the headers: "Professional Summary", "Education", "Technical Skills", "Experience", and "Projects". ATS parsers look for these exact headers.
+5. RELEVANCE FIRST: Select only the top 3-4 projects and experiences that are MOST RELEVANT to the job description. Omit irrelevant data.
+6. My name is "Sanjay Azhagan". Include my phone, email, github, and linkedin.
+7. Output ONLY valid JSON matching this exact schema (no markdown, no explanation, just raw JSON):
 
 {
-  "name": "Full Name",
+  "name": "Sanjay Azhagan",
   "email": "${userEmail}",
-  "summary": "2-3 sentence professional summary tailored to the job",
-  "skills": ["skill1", "skill2", "skill3"],
+  "phone": "9487704504",
+  "github": "github.com/Sanjayazhagan",
+  "linkedin": "linkedin.com/in/sanjay-azhagan-85a8622a6",
+  "summary": "3-4 sentence professional summary tailored to the job, heavily incorporating key terms from the JD.",
+  "education": [
+    {
+      "institution": "IIITDM Kancheepuram",
+      "degree": "Bachelor of Technology in Computer Science and Engineering",
+      "period": "Expected May 2028",
+      "gpa": "CGPA: 8.0/10.0"
+    }
+  ],
+  "skills": ["Skill 1 (Exact Match from JD)", "Skill 2", "Skill 3"],
   "experience": [
     {
       "role": "Job Title",
       "company": "Company Name", 
       "period": "Date Range",
-      "bullets": ["Achievement 1 with metrics if possible", "Achievement 2", "Achievement 3"]
+      "bullets": ["Action verb + context + measurable result (integrating exact JD keywords).", "Achievement 2", "Achievement 3"]
     }
   ],
   "projects": [
     {
       "title": "Project Name",
-      "bullets": ["What it does tailored to job", "Key technical detail"],
+      "bullets": ["What it does tailored to job", "Key technical detail using exact tech stack terms from JD"],
       "links": { "github": "url or null", "live": "url or null", "kaggle": "url or null" }
     }
   ]

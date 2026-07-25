@@ -5,10 +5,11 @@ import { revalidatePath } from "next/cache";
 import bcrypt from "bcrypt";
 
 export async function saveProject(data: any) {
-  const { id, pillars, ...rest } = data;
+  const { id, pillars, tags, ...rest } = data;
   const dbData = {
     ...rest,
-    pillars: JSON.stringify(pillars),
+    pillars: JSON.stringify(pillars || []),
+    tags: JSON.stringify(tags || []),
   };
   
   if (id) {
@@ -80,10 +81,11 @@ export async function changePassword(email: string, oldPass: string, newPass: st
 }
 
 export async function saveLog(data: any) {
-  const { id, pillars, ...rest } = data;
+  const { id, pillars, projectIds, ...rest } = data;
   const dbData = {
     ...rest,
-    pillars: JSON.stringify(pillars),
+    pillars: JSON.stringify(pillars || []),
+    projectIds: JSON.stringify(projectIds || []),
   };
   
   if (id) {
