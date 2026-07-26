@@ -1,18 +1,10 @@
 import React from "react";
-import { Document, Page, Text, View, StyleSheet, Font, Link } from "@react-pdf/renderer";
-
-Font.register({
-  family: "Open Sans",
-  fonts: [
-    { src: "https://cdn.jsdelivr.net/npm/open-sans-all@0.1.3/fonts/open-sans-regular.ttf" },
-    { src: "https://cdn.jsdelivr.net/npm/open-sans-all@0.1.3/fonts/open-sans-700.ttf", fontWeight: 700 }
-  ]
-});
+import { Document, Page, Text, View, StyleSheet, Link } from "@react-pdf/renderer";
 
 const styles = StyleSheet.create({
   page: {
     padding: 30,
-    fontFamily: "Open Sans",
+    fontFamily: "Helvetica",
     fontSize: 10,
     lineHeight: 1.5,
     color: "#1a1a1a"

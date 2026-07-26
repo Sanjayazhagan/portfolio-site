@@ -220,8 +220,8 @@ export function ResumeModal({ isOpen, onClose }: ResumeModalProps) {
       setStatus("success");
     } catch (err: any) {
       console.error("Failed to generate PDF Blob:", err);
-      setErrorMessage("Failed to generate PDF file.");
-      setStatus("error");
+      alert("Failed to generate PDF file. Please try downloading again.");
+      setStatus("success");
     }
   };
 
