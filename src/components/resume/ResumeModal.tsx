@@ -162,9 +162,9 @@ export function ResumeModal({ isOpen, onClose }: ResumeModalProps) {
 
   useEffect(() => {
     if (isOpen) {
-      setStatus("success");
+      setStatus("idle");
       setJobDescription("");
-      setResumeData({ name: "Test User", email: "test@example.com", summary: "Test summary", skills: ["React"], experience: [], projects: [] });
+      setResumeData(null);
       setErrorMessage("");
     }
   }, [isOpen]);
