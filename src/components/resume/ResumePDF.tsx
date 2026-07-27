@@ -16,8 +16,8 @@ const styles = StyleSheet.create({
     paddingBottom: 8
   },
   name: {
+    fontFamily: "Helvetica-Bold",
     fontSize: 18,
-    fontWeight: 700,
     textTransform: "uppercase",
     letterSpacing: 1,
     marginBottom: 4
@@ -34,8 +34,8 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   sectionTitle: {
+    fontFamily: "Helvetica-Bold",
     fontSize: 10,
-    fontWeight: 700,
     textTransform: "uppercase",
     borderBottom: "1px solid #999",
     paddingBottom: 2,
@@ -52,13 +52,13 @@ const styles = StyleSheet.create({
     marginBottom: 2
   },
   entryTitle: {
-    fontSize: 10,
-    fontWeight: 700
+    fontFamily: "Helvetica-Bold",
+    fontSize: 10
   },
   entryPeriod: {
+    fontFamily: "Helvetica-Oblique",
     fontSize: 9,
-    color: "#555",
-    fontStyle: "italic"
+    color: "#555"
   },
   entryCompany: {
     fontSize: 9.5,
