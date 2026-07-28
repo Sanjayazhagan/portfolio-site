@@ -34,10 +34,11 @@ export function ProjectsManager({ initialProjects, availablePillars }: { initial
   };
 
   const togglePillar = (pillarId: string) => {
+    const pillarTitle = availablePillars.find(p => p.id === pillarId)?.title;
     setFormData((prev: any) => {
       const current = prev.pillars || [];
-      if (current.includes(pillarId)) {
-        return { ...prev, pillars: current.filter((id: string) => id !== pillarId) };
+      if (current.includes(pillarId) || current.includes(pillarTitle)) {
+        return { ...prev, pillars: current.filter((id: string) => id !== pillarId && id !== pillarTitle) };
       } else {
         return { ...prev, pillars: [...current, pillarId] };
       }
@@ -61,7 +62,7 @@ export function ProjectsManager({ initialProjects, availablePillars }: { initial
                 <button
                   key={p.id}
                   onClick={() => togglePillar(p.id)}
-                  className={`px-3 py-1 rounded text-sm ${formData.pillars?.includes(p.id) ? 'bg-cyan-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}
+                  className={`px-3 py-1 rounded text-sm ${formData.pillars?.includes(p.id) || formData.pillars?.includes(p.title) ? 'bg-cyan-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}
                 >
                   {p.title}
                 </button>

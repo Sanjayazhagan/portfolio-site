@@ -17,7 +17,7 @@ export function BentoGrid({ activeTab, projects, pillars }: BentoGridProps) {
     ? projects.filter(p => p.showcase)
     : projects.filter(p => {
         const activePillarTitle = pillars.find((pl) => pl.id === activeTab)?.title;
-        return p.showcase && p.pillars.includes(activePillarTitle || "");
+        return p.showcase && (p.pillars.includes(activeTab) || p.pillars.includes(activePillarTitle || ""));
       });
 
   return (
@@ -50,11 +50,14 @@ export function BentoGrid({ activeTab, projects, pillars }: BentoGridProps) {
                     <p className="text-sm text-slate-400 leading-relaxed mb-6">{project.description}</p>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {project.pillars.map((p: string) => (
-                      <span key={p} className="text-[10px] font-bold uppercase tracking-wider text-cyan-400 bg-cyan-900/20 px-2.5 py-1 rounded-md border border-cyan-900/50">
-                        {p}
-                      </span>
-                    ))}
+                    {project.pillars.map((p: string) => {
+                      const actualPillar = pillars.find(pl => pl.id === p || pl.title === p);
+                      return (
+                        <span key={p} className="text-[10px] font-bold uppercase tracking-wider text-cyan-400 bg-cyan-900/20 px-2.5 py-1 rounded-md border border-cyan-900/50">
+                          {actualPillar ? actualPillar.title : p}
+                        </span>
+                      );
+                    })}
                   </div>
                 </GlassCard>
               </Link>
