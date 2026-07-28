@@ -78,16 +78,15 @@ export function CommandPalette({ isOpen, onClose, projects, pillars }: CommandPa
                     Projects
                   </div>
                   {projects.map((project) => (
-                    <a
+                    <Link
                       key={project.id}
-                      href={project.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href={`/project/${project.slug}`}
+                      onClick={onClose}
                       className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-800/80 transition-colors"
                     >
                       <span className="font-medium text-white">{project.title}</span>
-                      <span className="text-xs text-slate-400 bg-slate-800 px-2 py-1 rounded">External</span>
-                    </a>
+                      <span className="text-xs text-slate-400 bg-slate-800 px-2 py-1 rounded">View</span>
+                    </Link>
                   ))}
                 </div>
               </GlassCard>
