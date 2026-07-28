@@ -19,7 +19,7 @@ export function ProjectsManager({ initialProjects, availablePillars }: { initial
   
   const handleNew = () => {
     setEditingId("new");
-    setFormData({ title: "", slug: "", description: "", date: new Date().toISOString().split('T')[0], pillars: [], tags: [], content: "" });
+    setFormData({ title: "", slug: "", description: "", date: new Date().toISOString().split('T')[0], pillars: [], tags: [], content: "", showcase: true });
   };
   
   const handleSave = async () => {
@@ -69,6 +69,17 @@ export function ProjectsManager({ initialProjects, availablePillars }: { initial
             </div>
           </div>
 
+          <div className="flex items-center gap-2 py-2">
+            <input 
+              type="checkbox" 
+              id="showcase" 
+              checked={formData.showcase ?? true} 
+              onChange={e => setFormData({...formData, showcase: e.target.checked})} 
+              className="w-4 h-4 accent-cyan-500"
+            />
+            <label htmlFor="showcase" className="text-slate-300 font-medium">Showcase in Hero Section</label>
+          </div>
+
           <input className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white" placeholder="Tags (comma separated, e.g. React, Python, gRPC)" value={formData.tags?.join(", ")} onChange={e => setFormData({...formData, tags: e.target.value.split(",").map(s => s.trim()).filter(Boolean)})} />
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -97,7 +108,10 @@ export function ProjectsManager({ initialProjects, availablePillars }: { initial
       {initialProjects.map(p => (
         <GlassCard key={p.id} className="p-4 flex flex-col md:flex-row md:justify-between md:items-center group gap-4 md:gap-0">
           <div>
-            <h3 className="text-white font-bold">{p.title}</h3>
+            <h3 className="text-white font-bold flex items-center gap-2">
+              {p.title}
+              {p.showcase && <span className="text-[10px] bg-cyan-900/50 text-cyan-400 px-2 py-0.5 rounded-full border border-cyan-800">Featured</span>}
+            </h3>
             <p className="text-sm text-slate-400">{p.slug}</p>
           </div>
           <div className="flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">

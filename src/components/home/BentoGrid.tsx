@@ -14,10 +14,10 @@ interface BentoGridProps {
 
 export function BentoGrid({ activeTab, projects, pillars }: BentoGridProps) {
   const filteredProjects = activeTab === "All" 
-    ? projects 
+    ? projects.filter(p => p.showcase)
     : projects.filter(p => {
         const activePillarTitle = pillars.find((pl) => pl.id === activeTab)?.title;
-        return p.pillars.includes(activePillarTitle || "");
+        return p.showcase && p.pillars.includes(activePillarTitle || "");
       });
 
   return (
