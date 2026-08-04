@@ -165,8 +165,11 @@ export function LogTimeline({ logs }: { logs: Log[] }) {
                 className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none" 
                 style={{ top: `${yPos}px`, zIndex: 10 }}
               >
-                <div className={`absolute right-6 text-sm font-bold whitespace-nowrap transition-all duration-300 ${isCurrent ? 'text-cyan-400' : 'text-slate-600'}`}>
-                  {log.date}
+                <div className={`absolute right-6 flex flex-col items-end transition-all duration-300 w-32 md:w-40 ${isCurrent ? 'text-cyan-400' : 'text-slate-600'}`}>
+                  <span className="text-sm font-bold whitespace-nowrap">{log.date}</span>
+                  <span className={`text-xs text-right truncate w-full ${isCurrent ? 'text-cyan-300/80' : 'text-slate-500'}`} title={log.title}>
+                    {log.title}
+                  </span>
                 </div>
                 <div 
                   className={`w-4 h-4 rounded-full border-[3px] transition-all duration-300 ${
