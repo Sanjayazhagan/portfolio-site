@@ -4,9 +4,11 @@ import { motion } from "framer-motion";
 import { LogTimeline } from "@/components/detail/LogTimeline";
 
 export function OverallJourney({ pillars }: { pillars: any[] }) {
-  const allLogs = pillars
-    .flatMap((p) => p.logs)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const allLogs = Array.from(
+    new Map(
+      pillars.flatMap((p) => p.logs).map((log) => [log.id, log])
+    ).values()
+  ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return (
     <section id="journal" className="py-12">
