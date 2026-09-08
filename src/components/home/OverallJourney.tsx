@@ -1,19 +1,26 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { LogTimeline } from "@/components/detail/LogTimeline";
+import { JourneyCanvas } from "./journey3d/JourneyCanvas";
 
-export function OverallJourney({ pillars }: { pillars: any[] }) {
-  const allLogs = Array.from(
-    new Map(
-      pillars.flatMap((p) => p.logs).map((log) => [log.id, log])
-    ).values()
-  ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+export function OverallJourney({ pillars, allLogs }: { pillars: any[], allLogs: any[] }) {
+  const [isMobile, setIsMobile] = useState(true); // default to true to prevent hydration mismatch
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile(); // Check on mount
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+
 
   return (
-    <section id="journal" className="py-12">
+    <section id="journal" className="pt-4 pb-0">
       <motion.h2
-        className="text-2xl font-bold tracking-tight text-white mb-8 px-2"
+        className="text-2xl font-bold tracking-tight text-white mb-8 px-2 lg:hidden"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -21,7 +28,12 @@ export function OverallJourney({ pillars }: { pillars: any[] }) {
       >
         Overall Journey
       </motion.h2>
-      <LogTimeline logs={allLogs} />
+      
+      {isMobile ? (
+        <LogTimeline logs={allLogs} />
+      ) : (
+        <JourneyCanvas logs={allLogs} />
+      )}
     </section>
   );
 }

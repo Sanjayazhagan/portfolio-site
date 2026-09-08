@@ -85,7 +85,7 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${montserrat.variable} h-full antialiased`}
     >
       <CSPostHogProvider>
-        <body className="min-h-full flex flex-col pt-24 pb-12 overflow-x-hidden text-slate-50 relative">
+        <body className="min-h-full flex flex-col pt-24 overflow-x-hidden text-slate-50 relative">
           <PostHogPageView />
           <CustomCursor />
           <AvatarProvider>
