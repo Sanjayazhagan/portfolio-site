@@ -8,7 +8,7 @@ import { scrollState } from "./JourneyCanvas";
 
 const Z_SPACING = 15;
 
-export function JourneyNode({ log, index, total, containerRef }: { log: any, index: number, total: number, containerRef: React.RefObject<HTMLDivElement> }) {
+export function JourneyNode({ log, index, total, containerRef }: { log: any, index: number, total: number, containerRef: React.RefObject<HTMLDivElement | null> }) {
   const groupRef = useRef<THREE.Group>(null);
   
   const defaultImages = [
@@ -18,7 +18,7 @@ export function JourneyNode({ log, index, total, containerRef }: { log: any, ind
     "/journey_4.jpg"
   ];
   const imagePath = log.image || defaultImages[index % defaultImages.length];
-  const texture = useTexture(imagePath);
+  const texture = useTexture(imagePath) as THREE.Texture;
 
   // Alternate sides: even = RIGHT, odd = LEFT
   const isEven = index % 2 === 0;

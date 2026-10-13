@@ -7,14 +7,14 @@ import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { JourneyNode } from "./JourneyNode";
 import * as THREE from "three";
 import ReactMarkdown from "react-markdown";
-import { BookOpenCheck, Code, ArrowUpRight } from "lucide-react";
+import { BookOpenCheck, Code, ArrowUpRight, GitBranch, Share2, Globe, Database, ExternalLink } from "lucide-react";
 
 export const scrollState = { progress: 0, currentIndex: 0 };
 
 const Z_SPACING = 15;
 
 // ─── Camera Rig ─────────────────────────────────────────────────────
-function CameraRig({ containerRef, totalLogs }: { containerRef: React.RefObject<HTMLDivElement>, totalLogs: number }) {
+function CameraRig({ containerRef, totalLogs }: { containerRef: React.RefObject<HTMLDivElement | null>, totalLogs: number }) {
   const clock = useRef(0);
   
   useFrame(({ camera }, delta) => {
@@ -252,19 +252,49 @@ function TextPanel({ logs }: { logs: any[] }) {
                 {log.title}
               </h3>
               
-              <div className="prose prose-invert prose-sm max-w-none text-slate-400 line-clamp-5 prose-p:leading-relaxed">
+              <div className="prose prose-invert prose-sm max-w-none text-slate-400 max-h-[35vh] overflow-y-auto overscroll-contain custom-scrollbar pr-2 prose-p:leading-relaxed">
                 <ReactMarkdown>{log.content}</ReactMarkdown>
               </div>
 
-              <div className="flex gap-3 mt-6">
-                {(log.live || log.link || log.github) && (
+              <div className="flex flex-wrap gap-3 mt-6">
+                {log.live && (
                   <a 
-                    href={log.live || log.link || log.github} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="inline-flex items-center gap-2 px-5 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-sm font-semibold rounded-lg transition-all shadow-[0_0_20px_rgba(6,182,212,0.25)]"
+                    href={log.live} target="_blank" rel="noopener noreferrer" 
+                    className="flex items-center gap-2 px-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold rounded-lg transition-all shadow-[0_0_15px_rgba(6,182,212,0.4)] hover:-translate-y-0.5"
                   >
-                    View Project <ArrowUpRight size={14} />
+                    <Globe size={16} /> Live Demo
+                  </a>
+                )}
+                {log.github && (
+                  <a 
+                    href={log.github} target="_blank" rel="noopener noreferrer" 
+                    className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white text-xs font-semibold rounded-lg transition-all hover:-translate-y-0.5"
+                  >
+                    <GitBranch size={16} /> GitHub
+                  </a>
+                )}
+                {log.linkedin && (
+                  <a 
+                    href={log.linkedin} target="_blank" rel="noopener noreferrer" 
+                    className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-500 text-[#0a66c2] hover:text-[#3b82f6] text-xs font-semibold rounded-lg transition-all hover:-translate-y-0.5"
+                  >
+                    <Share2 size={16} /> LinkedIn
+                  </a>
+                )}
+                {log.kaggle && (
+                  <a 
+                    href={log.kaggle} target="_blank" rel="noopener noreferrer" 
+                    className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-500 text-[#20beff] hover:text-[#34d399] text-xs font-semibold rounded-lg transition-all hover:-translate-y-0.5"
+                  >
+                    <Database size={16} /> Kaggle
+                  </a>
+                )}
+                {log.link && (
+                  <a 
+                    href={log.link} target="_blank" rel="noopener noreferrer" 
+                    className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white text-xs font-semibold rounded-lg transition-all hover:-translate-y-0.5"
+                  >
+                    <ExternalLink size={16} /> Link
                   </a>
                 )}
               </div>
@@ -328,7 +358,7 @@ export function JourneyCanvas({ logs }: { logs: any[] }) {
             </group>
           </Suspense>
 
-          <EffectComposer disableNormalPass>
+          <EffectComposer enableNormalPass={false}>
             <Bloom luminanceThreshold={0.15} mipmapBlur intensity={1.8} />
           </EffectComposer>
         </Canvas>

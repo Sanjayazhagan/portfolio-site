@@ -5,7 +5,12 @@ import { Hero } from "./Hero";
 import { PillarTabs } from "./PillarTabs";
 import { BentoGrid } from "./BentoGrid";
 import { ExperienceTimeline } from "./ExperienceTimeline";
-import { OverallJourney } from "./OverallJourney";
+import dynamic from "next/dynamic";
+
+const OverallJourney = dynamic(
+  () => import("./OverallJourney").then(mod => mod.OverallJourney),
+  { ssr: false }
+);
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Briefcase, Code, BookOpen } from "lucide-react";
 import { SplitLayout } from "@/components/detail/SplitLayout";

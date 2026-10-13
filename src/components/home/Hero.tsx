@@ -12,6 +12,7 @@ export function Hero() {
         loop
         muted
         playsInline
+        preload="auto"
         className="absolute inset-0 w-full h-full object-cover z-0"
         style={{ 
           maskImage: "linear-gradient(to bottom, black 50%, transparent 100%)", 

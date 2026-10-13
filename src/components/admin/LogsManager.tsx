@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { saveLog, deleteLog } from "@/app/admin/actions";
 import { GlassCard } from "@/components/ui/GlassCard";
+import { ImageCropper } from "./ImageCropper";
 
 export function LogsManager({ initialLogs, availablePillars, availableProjects }: { initialLogs: any[], availablePillars: any[], availableProjects: any[] }) {
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -118,13 +119,17 @@ export function LogsManager({ initialLogs, availablePillars, availableProjects }
             )}
           </div>
 
+          <ImageCropper
+            currentImage={formData.image}
+            onImageReady={(path) => setFormData({...formData, image: path})}
+          />
+
           <div className="grid grid-cols-2 gap-4">
-            <input className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white" placeholder="Image URL (Optional - For 3D monitor)" value={formData.image || ""} onChange={e => setFormData({...formData, image: e.target.value})} />
             <input className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white" placeholder="External Link (Optional)" value={formData.link || ""} onChange={e => setFormData({...formData, link: e.target.value})} />
             <input className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white" placeholder="GitHub URL" value={formData.github || ""} onChange={e => setFormData({...formData, github: e.target.value})} />
             <input className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white" placeholder="LinkedIn URL" value={formData.linkedin || ""} onChange={e => setFormData({...formData, linkedin: e.target.value})} />
             <input className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white" placeholder="Live Demo URL" value={formData.live || ""} onChange={e => setFormData({...formData, live: e.target.value})} />
-            <input className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white" placeholder="Kaggle URL" value={formData.kaggle || ""} onChange={e => setFormData({...formData, kaggle: e.target.value})} />
+            <input className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white col-span-2" placeholder="Kaggle URL" value={formData.kaggle || ""} onChange={e => setFormData({...formData, kaggle: e.target.value})} />
           </div>
           <textarea className="w-full h-40 bg-slate-900 border border-slate-700 rounded p-2 text-white font-mono text-sm" placeholder="Markdown Content" value={formData.content} onChange={e => setFormData({...formData, content: e.target.value})} />
           <div className="flex gap-4">
