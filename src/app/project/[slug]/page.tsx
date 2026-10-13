@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { getProjects } from "@/lib/data";
 import { notFound } from "next/navigation";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -31,6 +32,35 @@ export async function generateStaticParams() {
   return projects.map((p) => ({
     slug: p.slug,
   }));
+}
+
+export async function generateMetadata(
+  props: { params: Promise<{ slug: string }> }
+): Promise<Metadata> {
+  const { slug } = await props.params;
+  const projects = await getProjects();
+  const project = projects.find((p) => p.slug === slug);
+
+  if (!project) {
+    return { title: "Project Not Found" };
+  }
+
+  const url = `/project/${project.slug}`;
+  return {
+    title: project.title,
+    description: project.description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      url,
+      title: project.title,
+      description: project.description,
+    },
+    twitter: {
+      title: project.title,
+      description: project.description,
+    },
+  };
 }
 
 export default async function ProjectPage(props: { params: Promise<{ slug: string }> }) {

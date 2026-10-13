@@ -1,9 +1,12 @@
 import { MetadataRoute } from 'next';
+import { getProjects, getPillars } from '@/lib/data';
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://sanjayazhagan.tech';
+const baseUrl = 'https://sanjayazhagan.tech';
 
-  return [
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const [projects, pillars] = await Promise.all([getProjects(), getPillars()]);
+
+  const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
       lastModified: new Date(),
@@ -11,16 +14,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1.0,
     },
     {
-      url: `${baseUrl}/veri-law`,
+      url: `${baseUrl}/journal`,
       lastModified: new Date(),
-      changeFrequency: 'monthly',
+      changeFrequency: 'weekly',
       priority: 0.8,
     },
-    {
-      url: `${baseUrl}/todo`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.6,
-    },
   ];
+
+  const projectRoutes: MetadataRoute.Sitemap = projects.map((p) => ({
+    url: `${baseUrl}/project/${p.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly',
+    priority: 0.7,
+  }));
+
+  const pillarRoutes: MetadataRoute.Sitemap = pillars.map((p: { id: string }) => ({
+    url: `${baseUrl}/pillar/${p.id}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly',
+    priority: 0.7,
+  }));
+
+  return [...staticRoutes, ...projectRoutes, ...pillarRoutes];
 }

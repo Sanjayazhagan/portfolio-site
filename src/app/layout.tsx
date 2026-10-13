@@ -20,6 +20,10 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://sanjayazhagan.tech'),
+  alternates: {
+    canonical: '/',
+  },
   title: {
     default: 'Sanjay Azhagan | Next.js Developer & AI Specialist',
     template: '%s | Sanjay Azhagan',
@@ -85,6 +89,24 @@ export default async function RootLayout({
     >
       <CSPostHogProvider>
         <body className="min-h-full flex flex-col pt-24 pb-12 overflow-x-hidden text-slate-50 relative">
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                '@context': 'https://schema.org',
+                '@type': 'Person',
+                name: 'Sanjay Azhagan',
+                url: 'https://sanjayazhagan.tech',
+                jobTitle: 'Software Engineer',
+                description:
+                  'Software Engineer specializing in Next.js, React, Distributed Systems, and AI.',
+                knowsAbout: ['Next.js', 'React', 'Distributed Systems', 'Artificial Intelligence', 'Web Development'],
+                sameAs: [
+                  'https://github.com/Sanjayazhagan',
+                ],
+              }),
+            }}
+          />
           <PostHogPageView />
           <CustomCursor />
           <Header projects={projects} pillars={pillars} />
