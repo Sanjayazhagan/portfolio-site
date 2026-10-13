@@ -33,7 +33,7 @@ export function Header({ projects, pillars }: { projects: any[], pillars: any[] 
         <GlassCard className="flex items-center justify-between px-3 md:px-6 py-2 md:py-3 !rounded-full">
           {/* Left */}
           <Link href="/" className="flex items-center">
-            <img src="/logo2.png?v=7" alt="Sanjay Azhagan Logo" width={60} height={60} className="w-8 h-8 md:w-10 md:h-10 object-contain scale-[1.5] origin-left" />
+            <Image src="/logo2.png" alt="Sanjay Azhagan Logo" width={60} height={60} priority className="w-8 h-8 md:w-10 md:h-10 object-contain scale-[1.5] origin-left" />
           </Link>
           
           {/* Center: Command Palette Trigger */}
