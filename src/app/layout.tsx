@@ -3,7 +3,6 @@ import { Geist, Geist_Mono, Montserrat } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { getProjects, getPillars } from "@/lib/data";
-import { AvatarProvider } from "@/components/providers/AvatarProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -88,12 +87,10 @@ export default async function RootLayout({
         <body className="min-h-full flex flex-col pt-24 pb-12 overflow-x-hidden text-slate-50 relative">
           <PostHogPageView />
           <CustomCursor />
-          <AvatarProvider>
-            <Header projects={projects} pillars={pillars} />
-            <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 md:px-8 lg:px-12">
-              {children}
-            </main>
-          </AvatarProvider>
+          <Header projects={projects} pillars={pillars} />
+          <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 md:px-8 lg:px-12">
+            {children}
+          </main>
         </body>
       </CSPostHogProvider>
     </html>
