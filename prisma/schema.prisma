@@ -51,6 +51,7 @@ model Log {
   title     String
   type      String
   content   String
+  image     String?  // <-- Added image field!
   link      String?
   github    String?
   linkedin  String?

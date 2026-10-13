@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { saveLog, deleteLog } from "@/app/admin/actions";
 import { GlassCard } from "@/components/ui/GlassCard";
+import { ImageCropper } from "./ImageCropper";
 
 export function LogsManager({ initialLogs, availablePillars, availableProjects }: { initialLogs: any[], availablePillars: any[], availableProjects: any[] }) {
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -117,6 +118,11 @@ export function LogsManager({ initialLogs, availablePillars, availableProjects }
               </div>
             )}
           </div>
+
+          <ImageCropper
+            currentImage={formData.image}
+            onImageReady={(path) => setFormData({...formData, image: path})}
+          />
 
           <div className="grid grid-cols-2 gap-4">
             <input className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white" placeholder="External Link (Optional)" value={formData.link || ""} onChange={e => setFormData({...formData, link: e.target.value})} />
