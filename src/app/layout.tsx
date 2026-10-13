@@ -3,7 +3,6 @@ import { Geist, Geist_Mono, Montserrat } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { getProjects, getPillars } from "@/lib/data";
-import { AvatarProvider } from "@/components/providers/AvatarProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,6 +20,10 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://sanjayazhagan.tech'),
+  alternates: {
+    canonical: '/',
+  },
   title: {
     default: 'Sanjay Azhagan | Next.js Developer & AI Specialist',
     template: '%s | Sanjay Azhagan',
@@ -86,14 +89,30 @@ export default async function RootLayout({
     >
       <CSPostHogProvider>
         <body className="min-h-full flex flex-col pt-24 pb-12 overflow-x-hidden text-slate-50 relative">
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                '@context': 'https://schema.org',
+                '@type': 'Person',
+                name: 'Sanjay Azhagan',
+                url: 'https://sanjayazhagan.tech',
+                jobTitle: 'Software Engineer',
+                description:
+                  'Software Engineer specializing in Next.js, React, Distributed Systems, and AI.',
+                knowsAbout: ['Next.js', 'React', 'Distributed Systems', 'Artificial Intelligence', 'Web Development'],
+                sameAs: [
+                  'https://github.com/Sanjayazhagan',
+                ],
+              }),
+            }}
+          />
           <PostHogPageView />
           <CustomCursor />
-          <AvatarProvider>
-            <Header projects={projects} pillars={pillars} />
-            <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 md:px-8 lg:px-12">
-              {children}
-            </main>
-          </AvatarProvider>
+          <Header projects={projects} pillars={pillars} />
+          <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 md:px-8 lg:px-12">
+            {children}
+          </main>
         </body>
       </CSPostHogProvider>
     </html>

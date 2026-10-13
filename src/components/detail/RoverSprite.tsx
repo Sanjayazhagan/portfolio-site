@@ -59,7 +59,7 @@ export function RoverSprite({ progress, pathHeight, isParked = true }: RoverSpri
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        let frame: HTMLCanvasElement | undefined;
+        let frame: HTMLImageElement | undefined;
 
         if (engineState.current === 'FLYING') {
            frameIndex.current = (frameIndex.current + framesToAdvance) % hoverFrames.length;

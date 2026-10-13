@@ -5,6 +5,7 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import ReactMarkdown from "react-markdown";
 import { ArrowUpRight, BookOpenCheck, Code } from "lucide-react";
 import { RoverSprite } from "./RoverSprite";
+import { AvatarProvider } from "@/components/providers/AvatarProvider";
 import { usePostHog } from 'posthog-js/react';
 
 interface Log {
@@ -141,6 +142,7 @@ export function LogTimeline({ logs }: { logs: Log[] }) {
   });
 
   return (
+    <AvatarProvider>
     <div className="flex flex-col md:flex-row relative w-full max-w-5xl mx-auto pt-12 pb-24 gap-8 md:gap-0" id="logs" ref={containerRef}>
       {/* LEFT: Sticky Path */}
       <div className="w-full md:w-32 shrink-0 relative hidden md:block">
@@ -254,5 +256,6 @@ export function LogTimeline({ logs }: { logs: Log[] }) {
         ))}
       </div>
     </div>
+    </AvatarProvider>
   );
 }

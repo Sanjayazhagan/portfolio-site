@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getPillars } from "@/lib/data";
 import { LogTimeline } from "@/components/detail/LogTimeline";
@@ -8,6 +9,36 @@ import { ArrowLeft } from "lucide-react";
 export async function generateStaticParams() {
   const pillars = await getPillars();
   return pillars.map((p: any) => ({ slug: p.id }));
+}
+
+export async function generateMetadata(
+  props: { params: Promise<{ slug: string }> }
+): Promise<Metadata> {
+  const { slug } = await props.params;
+  const pillars = await getPillars();
+  const pillar = pillars.find((p: { id: string }) => p.id === slug);
+
+  if (!pillar) {
+    return { title: "Pillar Not Found" };
+  }
+
+  const url = `/pillar/${pillar.id}`;
+  const description = pillar.summary || `${pillar.title} — engineering logs, learnings, and builds by Sanjay Azhagan.`;
+  return {
+    title: pillar.title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      url,
+      title: pillar.title,
+      description,
+    },
+    twitter: {
+      title: pillar.title,
+      description,
+    },
+  };
 }
 
 export default async function PillarPage(props: { params: Promise<{ slug: string }> }) {

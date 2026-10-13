@@ -1,7 +1,22 @@
+import type { Metadata } from "next";
 import { getPillars } from "@/lib/data";
 import { GlassCard } from "@/components/ui/GlassCard";
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Engineering Journal",
+  description:
+    "Thoughts, learnings, and architectural decisions across Next.js, distributed systems, and AI by Sanjay Azhagan.",
+  alternates: { canonical: "/journal" },
+  openGraph: {
+    type: "website",
+    url: "/journal",
+    title: "Engineering Journal | Sanjay Azhagan",
+    description:
+      "Thoughts, learnings, and architectural decisions across Next.js, distributed systems, and AI.",
+  },
+};
 
 export default async function JournalDirectory() {
   const pillars = await getPillars();
