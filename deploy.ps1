@@ -62,13 +62,41 @@ if ($LASTEXITCODE -ne 0) {
 }
 Write-Host "  Upload complete." -ForegroundColor Green
 
+# Upload production server secrets (additively merged into .env.production.local on the VM).
+$DeployEnv = ".\deploy.env"
+if (Test-Path $DeployEnv) {
+    scp -i $SshKey $DeployEnv "${VmUser}@${VmHost}:/tmp/deploy.env"
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "Secrets upload failed (scp exit $LASTEXITCODE). Aborting." -ForegroundColor Red
+        if (Test-Path ".\deploy.tar.gz") { Remove-Item -Force ".\deploy.tar.gz" }
+        exit 1
+    }
+    Write-Host "  Server secrets uploaded (deploy.env)." -ForegroundColor Green
+} else {
+    Write-Host "  No deploy.env found - skipping server secrets (see deploy.env.example)." -ForegroundColor DarkYellow
+}
+
 # ─── Step 5: Extract and Restart ─────────────────────────────────
 Write-Host "[5/5] Extracting on VM and restarting PM2... (You will be prompted for your password again)" -ForegroundColor Yellow
+# Runs on the VM. `set -e` makes any failure propagate to ssh's exit code.
+# The deploy.env merge is an additive upsert: only the keys present in
+# deploy.env are replaced/added in .env.production.local; every other var
+# already on the VM (DATABASE_URL, NEXTAUTH_*, ...) is left untouched.
 $RemoteCommand = @"
-mkdir -p ${VmPath}/public/uploads &&
-tar -xzf /tmp/deploy.tar.gz -C ${VmPath}/ &&
-rm /tmp/deploy.tar.gz &&
-pm2 restart portfolio || pm2 restart all &&
+set -e
+mkdir -p ${VmPath}/public/uploads
+tar -xzf /tmp/deploy.tar.gz -C ${VmPath}/
+rm /tmp/deploy.tar.gz
+if [ -f /tmp/deploy.env ]; then
+  cd ${VmPath}
+  touch .env.production.local
+  grep -E '^[A-Za-z_][A-Za-z0-9_]*=' /tmp/deploy.env > /tmp/deploy.env.clean || true
+  cut -d= -f1 /tmp/deploy.env.clean | while read -r k; do sed -i "/^`$k=/d" .env.production.local; done
+  cat /tmp/deploy.env.clean >> .env.production.local
+  rm -f /tmp/deploy.env /tmp/deploy.env.clean
+  echo "  Merged server secrets into .env.production.local"
+fi
+pm2 restart portfolio || pm2 restart all
 pm2 status
 "@
 
@@ -76,9 +104,7 @@ ssh -i $SshKey "${VmUser}@${VmHost}" $RemoteCommand
 if ($LASTEXITCODE -ne 0) {
     Write-Host ""
     Write-Host "Remote extract/restart failed (ssh exit $LASTEXITCODE)." -ForegroundColor Red
-    Write-Host "The archive is still at /tmp/deploy.tar.gz on the VM." -ForegroundColor Red
-    Write-Host "Re-run this command to retry just the final step:" -ForegroundColor Yellow
-    Write-Host "  ssh -i $SshKey ${VmUser}@${VmHost} `"$($RemoteCommand -replace "`r?`n", ' ')`"" -ForegroundColor Yellow
+    Write-Host "Re-run .\deploy.ps1 to retry (the local archive has been kept)." -ForegroundColor Yellow
     # Keep the local archive so a full re-run isn't needed.
     exit 1
 }
