@@ -99,6 +99,10 @@ for DB in ${VmPath}/dev.db ${VmPath}/prisma/dev.db; do
   echo "  Backed up `$DB -> `$DEST"
 done
 ls -1t "`$BK"/*.db 2>/dev/null | tail -n +11 | xargs -r rm -f || true
+if [ -d "${VmPath}/public/uploads" ] && [ -n "`$(ls -A "${VmPath}/public/uploads" 2>/dev/null)" ]; then
+  tar -czf "`$BK/uploads-`$TS.tar.gz" -C "${VmPath}/public" uploads && echo "  Backed up uploads -> `$BK/uploads-`$TS.tar.gz" || echo "  WARN: uploads backup failed (continuing)"
+fi
+ls -1t "`$BK"/uploads-*.tar.gz 2>/dev/null | tail -n +11 | xargs -r rm -f || true
 mkdir -p ${VmPath}/public/uploads
 tar -xzf /tmp/deploy.tar.gz -C ${VmPath}/
 rm /tmp/deploy.tar.gz
