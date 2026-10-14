@@ -12,6 +12,7 @@ const OverallJourney = dynamic(
   { ssr: false }
 );
 import { GlassCard } from "@/components/ui/GlassCard";
+import { LazyMount } from "@/components/ui/LazyMount";
 import { Briefcase, Code, BookOpen } from "lucide-react";
 import { SplitLayout } from "@/components/detail/SplitLayout";
 
@@ -96,9 +97,14 @@ export function HomeContent({ projects, pillars, experiences, logs }: { projects
         <ExperienceTimeline experiences={experiences} />
       </div>
 
-      {/* Overall Journey section — full-width breakout */}
+      {/* Overall Journey section — full-width breakout.
+          Deferred via LazyMount so the 3D (three.js) bundle and its WebGL
+          textures only load when the user scrolls near this section, keeping
+          them off the initial load path. */}
       <div className="mt-16 w-[100vw] relative left-1/2 -translate-x-1/2">
-        <OverallJourney pillars={pillars} allLogs={logs} />
+        <LazyMount minHeight={700}>
+          <OverallJourney pillars={pillars} allLogs={logs} />
+        </LazyMount>
       </div>
       <SidebarNav />
     </div>

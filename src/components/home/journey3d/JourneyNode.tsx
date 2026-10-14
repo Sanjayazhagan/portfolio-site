@@ -12,10 +12,10 @@ export function JourneyNode({ log, index, total, containerRef }: { log: any, ind
   const groupRef = useRef<THREE.Group>(null);
   
   const defaultImages = [
-    "/journey_1.jpg",
-    "/journey_2.jpg",
-    "/journey_3.jpg",
-    "/journey_4.jpg"
+    "/journey_1.webp",
+    "/journey_2.webp",
+    "/journey_3.webp",
+    "/journey_4.webp"
   ];
   const imagePath = log.image || defaultImages[index % defaultImages.length];
   const texture = useTexture(imagePath) as THREE.Texture;

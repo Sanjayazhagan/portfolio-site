@@ -55,6 +55,11 @@ Write-Host "  Archive created (deploy.tar.gz)." -ForegroundColor Green
 # ─── Step 4: Upload ──────────────────────────────────────────────
 Write-Host "[4/5] Uploading archive to VM... (You will be prompted for your password)" -ForegroundColor Yellow
 scp -i $SshKey deploy.tar.gz "${VmUser}@${VmHost}:/tmp/deploy.tar.gz"
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Upload failed (scp exit $LASTEXITCODE). Aborting." -ForegroundColor Red
+    if (Test-Path ".\deploy.tar.gz") { Remove-Item -Force ".\deploy.tar.gz" }
+    exit 1
+}
 Write-Host "  Upload complete." -ForegroundColor Green
 
 # ─── Step 5: Extract and Restart ─────────────────────────────────
@@ -68,6 +73,15 @@ pm2 status
 "@
 
 ssh -i $SshKey "${VmUser}@${VmHost}" $RemoteCommand
+if ($LASTEXITCODE -ne 0) {
+    Write-Host ""
+    Write-Host "Remote extract/restart failed (ssh exit $LASTEXITCODE)." -ForegroundColor Red
+    Write-Host "The archive is still at /tmp/deploy.tar.gz on the VM." -ForegroundColor Red
+    Write-Host "Re-run this command to retry just the final step:" -ForegroundColor Yellow
+    Write-Host "  ssh -i $SshKey ${VmUser}@${VmHost} `"$($RemoteCommand -replace "`r?`n", ' ')`"" -ForegroundColor Yellow
+    # Keep the local archive so a full re-run isn't needed.
+    exit 1
+}
 
 # Clean up local archive
 if (Test-Path ".\deploy.tar.gz") { Remove-Item -Force ".\deploy.tar.gz" }
