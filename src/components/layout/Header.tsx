@@ -8,13 +8,12 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { CommandPalette } from "@/components/CommandPalette";
 import { BookingModal } from "@/components/BookingModal";
 import { ResumeModal } from "@/components/resume/ResumeModal";
-import { usePostHog } from 'posthog-js/react';
+import { capture } from "@/lib/analytics";
 
 export function Header({ projects, pillars }: { projects: any[], pillars: any[] }) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [isResumeOpen, setIsResumeOpen] = useState(false);
-  const posthog = usePostHog();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -54,7 +53,7 @@ export function Header({ projects, pillars }: { projects: any[], pillars: any[] 
             </Link>
             <button 
               onClick={() => {
-                posthog?.capture('resume_modal_opened');
+                capture('resume_modal_opened');
                 setIsResumeOpen(true);
               }}
               className="text-xs md:text-sm font-medium text-slate-300 hover:text-cyan-400 transition-colors hidden md:block"
@@ -63,7 +62,7 @@ export function Header({ projects, pillars }: { projects: any[], pillars: any[] 
             </button>
             <button 
               onClick={() => {
-                posthog?.capture('book_call_clicked', { location: 'header' });
+                capture('book_call_clicked', { location: 'header' });
                 setIsBookingOpen(true);
               }}
               className="text-xs md:text-sm font-medium bg-cyan-600 text-white px-3 md:px-5 py-1.5 md:py-2 rounded-full shadow-sm hover:bg-cyan-500 hover:shadow-md transition-all active:scale-95 whitespace-nowrap"
