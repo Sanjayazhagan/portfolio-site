@@ -84,6 +84,21 @@ Write-Host "[5/5] Extracting on VM and restarting PM2... (You will be prompted f
 # already on the VM (DATABASE_URL, NEXTAUTH_*, ...) is left untouched.
 $RemoteCommand = @"
 set -e
+echo "Backing up database (pre-deploy)..."
+BK="${VmPath}/db-backups"
+mkdir -p "`$BK"
+TS="`$(date +%Y%m%d-%H%M%S)"
+for DB in ${VmPath}/dev.db ${VmPath}/prisma/dev.db; do
+  [ -f "`$DB" ] || continue
+  DEST="`$BK/`$(basename "`$(dirname "`$DB")")-`$(basename "`$DB").`$TS.db"
+  if command -v sqlite3 >/dev/null 2>&1; then
+    sqlite3 "`$DB" ".backup '`$DEST'" || cp "`$DB" "`$DEST"
+  else
+    cp "`$DB" "`$DEST"
+  fi
+  echo "  Backed up `$DB -> `$DEST"
+done
+ls -1t "`$BK"/*.db 2>/dev/null | tail -n +11 | xargs -r rm -f || true
 mkdir -p ${VmPath}/public/uploads
 tar -xzf /tmp/deploy.tar.gz -C ${VmPath}/
 rm /tmp/deploy.tar.gz
