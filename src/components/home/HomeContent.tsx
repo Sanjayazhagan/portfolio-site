@@ -101,7 +101,9 @@ export function HomeContent({ projects, pillars, experiences, logs }: { projects
             Deferred via LazyMount so the 3D (three.js) bundle and its WebGL
             textures only load when the user scrolls near this section, keeping
             them off the initial load path. */}
-        <div className="mt-16 w-[100vw] relative left-1/2 -translate-x-1/2">
+        {/* The anchor lives on this always-rendered wrapper: the journey itself is lazy and
+            client-only, so an id inside it doesn't exist yet for the side nav to scroll to or observe. */}
+        <div id="journal" className="mt-16 w-[100vw] relative left-1/2 -translate-x-1/2">
           <LazyMount minHeight={700}>
             <OverallJourney pillars={pillars} allLogs={logs} />
           </LazyMount>
