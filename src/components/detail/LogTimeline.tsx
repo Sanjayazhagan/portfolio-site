@@ -170,9 +170,9 @@ function Timeline({ logs }: { logs: Log[] }) {
                 className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none" 
                 style={{ top: `${yPos}px`, zIndex: 10 }}
               >
-                <div className={`absolute right-6 flex flex-col items-end transition-all duration-300 w-32 md:w-40 ${isCurrent ? 'text-cyan-400' : 'text-slate-600'}`}>
+                <div className={`absolute right-6 flex flex-col items-end transition-all duration-300 w-32 md:w-40 ${isCurrent ? 'text-cyan-400' : 'text-slate-400'}`}>
                   <span className="text-sm font-bold whitespace-nowrap">{log.date}</span>
-                  <span className={`text-xs text-right truncate w-full ${isCurrent ? 'text-cyan-300/80' : 'text-slate-500'}`} title={log.title}>
+                  <span className={`text-xs text-right truncate w-full ${isCurrent ? 'text-cyan-300/80' : 'text-slate-400'}`} title={log.title}>
                     {log.title}
                   </span>
                 </div>
@@ -216,7 +216,7 @@ function Timeline({ logs }: { logs: Log[] }) {
 
             <div className="w-full pl-[60px] md:pl-0">
               <GlassCard className="p-6 md:p-8 shadow-2xl border-cyan-900/30">
-                <div className="flex items-center gap-3 text-sm font-bold text-slate-500 mb-4">
+                <div className="flex items-center gap-3 text-sm font-bold text-slate-400 mb-4">
                   <span className="text-cyan-400/80">{log.date}</span>
                   <span className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-slate-800 text-[10px] uppercase tracking-wider text-slate-400">
                     {log.type === "Learning" ? <BookOpenCheck size={12} /> : <Code size={12} />}

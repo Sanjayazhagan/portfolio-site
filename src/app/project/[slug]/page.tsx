@@ -119,7 +119,7 @@ export default async function ProjectPage(props: { params: Promise<{ slug: strin
         {/* Mobile Links & Resources */}
         <div className="xl:hidden mt-12">
           <GlassCard className="p-5">
-            <h3 className="text-sm font-bold text-white mb-3 uppercase tracking-wider">Links & Resources</h3>
+            <h2 className="text-sm font-bold text-white mb-3 uppercase tracking-wider">Links & Resources</h2>
             <div className="space-y-2">
               {project.github && (
                 <a href={project.github} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-700 group">
@@ -176,7 +176,7 @@ export default async function ProjectPage(props: { params: Promise<{ slug: strin
       {/* Desktop Links & Resources - Fixed Right */}
       <div className="hidden xl:block fixed top-32 right-8 2xl:right-24 w-64 z-10">
         <GlassCard className="p-5 shadow-xl">
-          <h3 className="text-sm font-bold text-white mb-3 uppercase tracking-wider">Links & Resources</h3>
+          <h2 className="text-sm font-bold text-white mb-3 uppercase tracking-wider">Links & Resources</h2>
           <div className="space-y-2">
             {project.github && (
               <a href={project.github} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-700 group">

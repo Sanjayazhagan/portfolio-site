@@ -8,10 +8,10 @@ export const metadata: Metadata = {
 export default function NotFound() {
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
-      <p className="font-mono text-xs text-slate-500">
+      <p className="font-mono text-xs text-slate-400">
         <span className="text-cyan-400/80">{"$ "}</span>cd ./this-page
       </p>
-      <p className="mt-1 font-mono text-xs text-slate-600">no such file or directory</p>
+      <p className="mt-1 font-mono text-xs text-slate-400">no such file or directory</p>
       <h1 className="mt-6 text-4xl font-bold tracking-tight text-white md:text-5xl">404</h1>
       <p className="mt-3 max-w-md text-slate-400">This page doesn&apos;t exist — it may have moved, or the link is wrong.</p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">

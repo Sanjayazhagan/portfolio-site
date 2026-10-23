@@ -16,12 +16,12 @@ export default function GlobalError({
     <html lang="en">
       <body className="flex min-h-screen flex-col items-center justify-center bg-[#020617] px-4 text-center text-slate-50 antialiased">
         <title>Something went wrong | Sanjay Azhagan</title>
-        <p className="font-mono text-xs text-slate-500">
+        <p className="font-mono text-xs text-slate-400">
           <span className="text-cyan-400/80">{"$ "}</span>exit code 1
         </p>
         <h1 className="mt-4 text-3xl font-bold tracking-tight md:text-4xl">The site hit an error.</h1>
         <p className="mt-3 max-w-md text-slate-400">It couldn&apos;t load right now. Please try again in a moment.</p>
-        {error.digest && <p className="mt-2 font-mono text-xs text-slate-600">ref: {error.digest}</p>}
+        {error.digest && <p className="mt-2 font-mono text-xs text-slate-400">ref: {error.digest}</p>}
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <button
             onClick={() => unstable_retry()}

@@ -9,6 +9,7 @@ import { CommandPalette } from "@/components/CommandPalette";
 import { BookingModal } from "@/components/BookingModal";
 import { ResumeModal } from "@/components/resume/ResumeModal";
 import { capture } from "@/lib/analytics";
+import { OPEN_BOOKING_EVENT } from "@/lib/booking";
 
 export function Header({ projects, pillars }: { projects: any[], pillars: any[] }) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -26,6 +27,13 @@ export function Header({ projects, pillars }: { projects: any[], pillars: any[] 
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  // Other parts of the page (the footer CTA) open the booking modal via this event.
+  useEffect(() => {
+    const openBooking = () => setIsBookingOpen(true);
+    window.addEventListener(OPEN_BOOKING_EVENT, openBooking);
+    return () => window.removeEventListener(OPEN_BOOKING_EVENT, openBooking);
+  }, []);
+
   return (
     <>
       <header className="fixed top-4 left-1/2 -translate-x-1/2 w-full max-w-5xl px-4 z-50">
@@ -38,6 +46,7 @@ export function Header({ projects, pillars }: { projects: any[], pillars: any[] 
           {/* Center: Command Palette Trigger */}
           <button 
             id="search-trigger"
+            aria-label="Search projects and pillars"
             onClick={() => setIsSearchOpen(true)}
             className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-slate-800/50 border border-slate-700/50 hover:bg-slate-700/50 transition-colors text-slate-400 text-xs md:text-sm"
           >
@@ -65,7 +74,7 @@ export function Header({ projects, pillars }: { projects: any[], pillars: any[] 
                 capture('book_call_clicked', { location: 'header' });
                 setIsBookingOpen(true);
               }}
-              className="text-xs md:text-sm font-medium bg-cyan-600 text-white px-3 md:px-5 py-1.5 md:py-2 rounded-full shadow-sm hover:bg-cyan-500 hover:shadow-md transition-all active:scale-95 whitespace-nowrap"
+              className="text-xs md:text-sm font-medium bg-cyan-400 text-slate-950 font-semibold px-3 md:px-5 py-1.5 md:py-2 rounded-full shadow-sm hover:bg-cyan-300 hover:shadow-md transition-all active:scale-95 whitespace-nowrap"
             >
               Book a Call
             </button>

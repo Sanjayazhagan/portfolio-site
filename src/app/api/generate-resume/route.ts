@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { clientIp, rateLimit } from "@/lib/rateLimit";
 
 const prisma = new PrismaClient();
 
@@ -54,17 +55,58 @@ async function callOpenRouter(
   }
 }
 
+// Every request spends OpenRouter quota, so the endpoint is bounded on all sides.
+const MIN_CHARS = 20;
+const MAX_CHARS = 6000;
+const HOUR = 60 * 60 * 1000;
+
+function tooMany(retryAfter: number) {
+  return NextResponse.json(
+    { error: "Too many resume requests right now. Please try again a little later." },
+    { status: 429, headers: { "Retry-After": String(retryAfter) } }
+  );
+}
+
 export async function POST(req: Request) {
   try {
-    const { jobDescription } = await req.json();
+    // Per-client limit, plus a global cap that still holds if X-Forwarded-For is spoofed.
+    const ip = clientIp((name) => req.headers.get(name));
+    const perClient = rateLimit(`resume:ip:${ip}`, 5, HOUR);
+    if (!perClient.ok) return tooMany(perClient.retryAfter);
+    const global = rateLimit("resume:global", 60, HOUR);
+    if (!global.ok) return tooMany(global.retryAfter);
 
-    if (!jobDescription) {
-      return NextResponse.json({ error: "Job description is required" }, { status: 400 });
+    let body: unknown;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    }
+    const { jobDescription: raw, website } = (body ?? {}) as { jobDescription?: unknown; website?: unknown };
+
+    // Honeypot: the form has a hidden "website" field people never see or fill in.
+    if (typeof website === "string" && website.trim() !== "") {
+      return NextResponse.json({ error: "Request rejected" }, { status: 400 });
+    }
+
+    const jobDescription = typeof raw === "string" ? raw.trim() : "";
+    if (jobDescription.length < MIN_CHARS) {
+      return NextResponse.json(
+        { error: `Please describe the role in at least ${MIN_CHARS} characters.` },
+        { status: 400 }
+      );
+    }
+    if (jobDescription.length > MAX_CHARS) {
+      return NextResponse.json(
+        { error: `Please keep the description under ${MAX_CHARS} characters.` },
+        { status: 400 }
+      );
     }
 
     const openRouterKey = process.env.OPENROUTER_API_KEY;
     if (!openRouterKey) {
-      return NextResponse.json({ error: "Server is missing OPENROUTER_API_KEY" }, { status: 500 });
+      console.error("generate-resume: OPENROUTER_API_KEY is not set");
+      return NextResponse.json({ error: "Resume generation is temporarily unavailable." }, { status: 503 });
     }
 
     // Fetch ALL data from database — nothing is hardcoded
@@ -388,9 +430,11 @@ CRITICAL REMINDERS:
     }
 
     if (!aiContent) {
+      console.error("generate-resume: all models failed. Last error:", lastError);
       return NextResponse.json(
         {
-          error: `All free models failed. Last error: ${lastError}. Try again in a minute (free models have rate limits).`,
+          // Upstream details stay in the server log (above); visitors get a plain message.
+          error: "The AI service is busy right now. Please try again in a minute.",
         },
         { status: 500 }
       );
@@ -416,6 +460,6 @@ CRITICAL REMINDERS:
     return NextResponse.json({ resume: resumeData });
   } catch (error: any) {
     console.error("API Error:", error);
-    return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: "Something went wrong generating the resume. Please try again." }, { status: 500 });
   }
 }
