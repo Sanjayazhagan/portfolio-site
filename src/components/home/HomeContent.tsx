@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { MotionConfig } from "framer-motion";
 import { Hero } from "./Hero";
 import { PillarTabs } from "./PillarTabs";
 import { BentoGrid } from "./BentoGrid";
@@ -81,17 +82,17 @@ export function HomeContent({ projects, pillars, experiences }: { projects: any[
   const [activeTab, setActiveTab] = useState("All");
 
   return (
-    <div className="pb-24 relative">
-      <Hero />
-      <div className="flex flex-col gap-12 w-full max-w-6xl mx-auto">
-        <div className="flex flex-col items-center">
-          <PillarTabs activeTab={activeTab} setActiveTab={setActiveTab} pillars={pillars} />
+    <MotionConfig reducedMotion="user">
+      <div className="pb-24 relative">
+        <Hero />
+        <div className="flex flex-col gap-12 w-full max-w-6xl mx-auto">
+          <PillarTabs activeTab={activeTab} setActiveTab={setActiveTab} pillars={pillars} projects={projects} />
+          <BentoGrid activeTab={activeTab} projects={projects} pillars={pillars} />
+          <ExperienceTimeline experiences={experiences} />
+          <OverallJourney pillars={pillars} />
         </div>
-        <BentoGrid activeTab={activeTab} projects={projects} pillars={pillars} />
-        <ExperienceTimeline experiences={experiences} />
-        <OverallJourney pillars={pillars} />
+        <SidebarNav />
       </div>
-      <SidebarNav />
-    </div>
+    </MotionConfig>
   );
 }

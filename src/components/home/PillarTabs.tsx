@@ -2,38 +2,67 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-
+import { matchesPillar, showcased, type PillarLike, type ProjectLike } from "@/lib/pillars";
 
 interface PillarTabsProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
-  pillars: any[];
+  pillars: PillarLike[];
+  projects: ProjectLike[];
 }
 
-export function PillarTabs({ activeTab, setActiveTab, pillars }: PillarTabsProps) {
-  const tabs = [{ id: "All", title: "All" }, ...pillars];
+export function PillarTabs({ activeTab, setActiveTab, pillars, projects }: PillarTabsProps) {
+  const tabs: PillarLike[] = [{ id: "All", title: "All" }, ...pillars];
+  const visible = showcased(projects);
+  const activeTitle = tabs.find((t) => t.id === activeTab)?.title ?? "All";
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-2 py-8">
-      {tabs.map((tab) => (
-        <button
-          key={tab.id}
-          onClick={() => setActiveTab(tab.id)}
-          className={cn(
-            "relative px-5 py-2.5 text-sm font-semibold transition-colors rounded-full",
-            activeTab === tab.id ? "text-cyan-400" : "text-slate-400 hover:text-white"
-          )}
-        >
-          {activeTab === tab.id && (
-            <motion.div
-              layoutId="active-pillar"
-              className="absolute inset-0 bg-slate-800 border border-slate-700 shadow-sm rounded-full -z-10"
-              transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            />
-          )}
-          <span className="relative z-10">{tab.title}</span>
-        </button>
-      ))}
+    <div className="-mb-6 flex w-full flex-col items-center gap-4 pt-10">
+      {/* The filter reads as the command it is */}
+      <div className="font-mono text-xs text-slate-500" aria-hidden>
+        <span className="text-cyan-400/80">$</span> ls work --pillar=
+        <span className="text-slate-200">{activeTab === "All" ? "*" : activeTitle.toLowerCase()}</span>
+      </div>
+
+      <div
+        role="tablist"
+        aria-label="Filter projects by pillar"
+        className="flex flex-wrap justify-center gap-1 rounded-full border border-white/10 bg-slate-900/60 p-1 backdrop-blur"
+      >
+        {tabs.map((tab) => {
+          const active = activeTab === tab.id;
+          const count = visible.filter((p) => matchesPillar(p, tab.id, pillars)).length;
+          return (
+            <button
+              key={tab.id}
+              role="tab"
+              aria-selected={active}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "relative flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-colors duration-150",
+                active ? "text-white" : "text-slate-400 hover:text-slate-200"
+              )}
+            >
+              {active && (
+                <motion.span
+                  layoutId="pillar-pill"
+                  className="absolute inset-0 rounded-full bg-white/[0.07] ring-1 ring-cyan-400/40"
+                  transition={{ type: "spring", stiffness: 520, damping: 42 }}
+                />
+              )}
+              <span className="relative">{tab.title}</span>
+              <span
+                className={cn(
+                  "relative font-mono text-[11px] tabular-nums",
+                  active ? "text-cyan-300" : "text-slate-600"
+                )}
+              >
+                {count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
