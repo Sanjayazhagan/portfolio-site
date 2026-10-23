@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { saveProject, deleteProject } from "@/app/admin/actions";
 import { GlassCard } from "@/components/ui/GlassCard";
+import { ImageCropper } from "./ImageCropper";
 
 export function ProjectsManager({ initialProjects, availablePillars }: { initialProjects: any[], availablePillars: any[] }) {
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -81,8 +82,13 @@ export function ProjectsManager({ initialProjects, availablePillars }: { initial
             <label htmlFor="showcase" className="text-slate-300 font-medium">Showcase in Hero Section</label>
           </div>
 
-          <input className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white" placeholder="Tags (comma separated, e.g. React, Python, gRPC)" value={formData.tags?.join(", ")} onChange={e => setFormData({...formData, tags: e.target.value.split(",").map(s => s.trim()).filter(Boolean)})} />
+          <input className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white" placeholder="Tags (comma separated, e.g. React, Python, gRPC)" value={formData.tags?.join(", ")} onChange={e => setFormData({...formData, tags: e.target.value.split(",").map((s: string) => s.trim()).filter(Boolean)})} />
           
+          <ImageCropper
+            currentImage={formData.image}
+            onImageReady={(path) => setFormData({...formData, image: path})}
+          />
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white" placeholder="GitHub URL" value={formData.github || ""} onChange={e => setFormData({...formData, github: e.target.value})} />
             <input className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white" placeholder="LinkedIn URL" value={formData.linkedin || ""} onChange={e => setFormData({...formData, linkedin: e.target.value})} />

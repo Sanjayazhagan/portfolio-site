@@ -3,15 +3,17 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// Free models to try in order of preference
+// Free models to try in order of preference.
+// Verified against the OpenRouter catalog on 2026-10-14 (the previous list
+// had 4 slugs that no longer exist). The nemotron models were confirmed to
+// return clean JSON; the Gemma instruct models exist and serve as fallbacks
+// when the nemotrons are rate-limited.
 const FREE_MODELS = [
+  "nvidia/nemotron-3-ultra-550b-a55b:free",
   "google/gemma-4-31b-it:free",
-  "google/gemma-4-26b-a4b-it:free",
   "nvidia/nemotron-3-super-120b-a12b:free",
-  "nvidia/nemotron-3-nano-30b-a3b:free",
-  "nvidia/nemotron-nano-9b-v2:free",
-  "openai/gpt-oss-20b:free",
-  "poolside/laguna-m.1:free",
+  "google/gemma-4-26b-a4b-it:free",
+  "nvidia/nemotron-3.5-lightning:free",
 ];
 
 async function callOpenRouter(

@@ -71,8 +71,7 @@ export const metadata: Metadata = {
 };
 
 import { CustomCursor } from "@/components/ui/CustomCursor";
-import { CSPostHogProvider } from "@/providers/PostHogProvider";
-import PostHogPageView from "@/components/PostHogPageView";
+import { AnalyticsLoader } from "@/components/AnalyticsLoader";
 
 export default async function RootLayout({
   children,
@@ -87,34 +86,32 @@ export default async function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${montserrat.variable} h-full antialiased`}
     >
-      <CSPostHogProvider>
-        <body className="min-h-full flex flex-col pt-24 pb-12 overflow-x-hidden text-slate-50 relative">
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                '@context': 'https://schema.org',
-                '@type': 'Person',
-                name: 'Sanjay Azhagan',
-                url: 'https://sanjayazhagan.tech',
-                jobTitle: 'Software Engineer',
-                description:
-                  'Software Engineer specializing in Next.js, React, Distributed Systems, and AI.',
-                knowsAbout: ['Next.js', 'React', 'Distributed Systems', 'Artificial Intelligence', 'Web Development'],
-                sameAs: [
-                  'https://github.com/Sanjayazhagan',
-                ],
-              }),
-            }}
-          />
-          <PostHogPageView />
-          <CustomCursor />
-          <Header projects={projects} pillars={pillars} />
-          <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 md:px-8 lg:px-12">
-            {children}
-          </main>
-        </body>
-      </CSPostHogProvider>
+      <body className="min-h-full flex flex-col pt-24 overflow-x-hidden text-slate-50 relative">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Person',
+              name: 'Sanjay Azhagan',
+              url: 'https://sanjayazhagan.tech',
+              jobTitle: 'Software Engineer',
+              description:
+                'Software Engineer specializing in Next.js, React, Distributed Systems, and AI.',
+              knowsAbout: ['Next.js', 'React', 'Distributed Systems', 'Artificial Intelligence', 'Web Development'],
+              sameAs: [
+                'https://github.com/Sanjayazhagan',
+              ],
+            }),
+          }}
+        />
+        <AnalyticsLoader />
+        <CustomCursor />
+        <Header projects={projects} pillars={pillars} />
+        <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 md:px-8 lg:px-12">
+          {children}
+        </main>
+      </body>
     </html>
   );
 }

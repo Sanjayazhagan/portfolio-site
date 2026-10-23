@@ -6,8 +6,14 @@ import { Hero } from "./Hero";
 import { PillarTabs } from "./PillarTabs";
 import { BentoGrid } from "./BentoGrid";
 import { ExperienceTimeline } from "./ExperienceTimeline";
-import { OverallJourney } from "./OverallJourney";
+import dynamic from "next/dynamic";
+
+const OverallJourney = dynamic(
+  () => import("./OverallJourney").then(mod => mod.OverallJourney),
+  { ssr: false }
+);
 import { GlassCard } from "@/components/ui/GlassCard";
+import { LazyMount } from "@/components/ui/LazyMount";
 import { Briefcase, Code, BookOpen } from "lucide-react";
 import { SplitLayout } from "@/components/detail/SplitLayout";
 
@@ -78,18 +84,27 @@ function SidebarNav() {
   );
 }
 
-export function HomeContent({ projects, pillars, experiences }: { projects: any[], pillars: any[], experiences: any[] }) {
+export function HomeContent({ projects, pillars, experiences, logs }: { projects: any[], pillars: any[], experiences: any[], logs: any[] }) {
   const [activeTab, setActiveTab] = useState("All");
 
   return (
     <MotionConfig reducedMotion="user">
-      <div className="pb-24 relative">
+      <div className="relative">
         <Hero />
-        <div className="flex flex-col gap-12 w-full max-w-6xl mx-auto">
+        <div className="flex flex-col gap-12 w-full max-w-6xl mx-auto px-4 md:px-8">
           <PillarTabs activeTab={activeTab} setActiveTab={setActiveTab} pillars={pillars} projects={projects} />
           <BentoGrid activeTab={activeTab} projects={projects} pillars={pillars} />
           <ExperienceTimeline experiences={experiences} />
-          <OverallJourney pillars={pillars} />
+        </div>
+
+        {/* Overall Journey section — full-width breakout.
+            Deferred via LazyMount so the 3D (three.js) bundle and its WebGL
+            textures only load when the user scrolls near this section, keeping
+            them off the initial load path. */}
+        <div className="mt-16 w-[100vw] relative left-1/2 -translate-x-1/2">
+          <LazyMount minHeight={700}>
+            <OverallJourney pillars={pillars} allLogs={logs} />
+          </LazyMount>
         </div>
         <SidebarNav />
       </div>

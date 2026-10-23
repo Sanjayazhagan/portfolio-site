@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Sparkles, Loader2, Download, FileWarning } from "lucide-react";
-import { usePostHog } from "posthog-js/react";
+import { capture } from "@/lib/analytics";
 
 interface ResumeData {
   name: string;
@@ -157,7 +157,6 @@ export function ResumeModal({ isOpen, onClose }: ResumeModalProps) {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [resumeData, setResumeData] = useState<ResumeData | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
-  const posthog = usePostHog();
   const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -173,7 +172,7 @@ export function ResumeModal({ isOpen, onClose }: ResumeModalProps) {
     if (!jobDescription.trim()) return;
 
     setStatus("loading");
-    posthog?.capture("resume_generate_started");
+    capture("resume_generate_started");
 
     try {
       const res = await fetch("/api/generate-resume", {
@@ -190,12 +189,12 @@ export function ResumeModal({ isOpen, onClose }: ResumeModalProps) {
 
       setResumeData(data.resume);
       setStatus("success");
-      posthog?.capture("resume_generate_success");
+      capture("resume_generate_success");
     } catch (err: any) {
       console.error(err);
       setErrorMessage(err.message || "An unexpected error occurred.");
       setStatus("error");
-      posthog?.capture("resume_generate_error", { error: err.message });
+      capture("resume_generate_error", { error: err.message });
     }
   };
 
