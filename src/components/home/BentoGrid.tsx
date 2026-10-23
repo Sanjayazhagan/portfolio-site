@@ -58,7 +58,7 @@ function BentoCard({ project, pillars, featured }: { project: Project; pillars: 
               {project.pillars.map((p) => {
                 const pillar = pillars.find((pl) => pl.id === p || pl.title === p);
                 return (
-                  <span key={p} className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
+                  <span key={p} className="font-mono text-[10px] uppercase tracking-wider text-slate-400">
                     {pillar ? pillar.title : p}
                   </span>
                 );
@@ -68,7 +68,7 @@ function BentoCard({ project, pillars, featured }: { project: Project; pillars: 
               size={18}
               className={cn(
                 "shrink-0 transition-[color,transform] duration-200",
-                hovered ? "translate-x-0.5 -translate-y-0.5 text-cyan-400" : "text-slate-600"
+                hovered ? "translate-x-0.5 -translate-y-0.5 text-cyan-400" : "text-slate-400"
               )}
             />
           </div>
@@ -134,7 +134,7 @@ export function BentoGrid({ activeTab, projects, pillars }: BentoGridProps) {
     <section ref={ref} id="projects" className="pb-12">
       <div className="mb-8 flex items-baseline justify-between px-2">
         <GhostTitle className="text-3xl font-bold tracking-tight text-white md:text-5xl">Selected work</GhostTitle>
-        <span className="font-mono text-xs text-slate-500">{String(filtered.length).padStart(2, "0")} projects</span>
+        <span className="font-mono text-xs text-slate-400">{String(filtered.length).padStart(2, "0")} projects</span>
       </div>
       <div className="relative">
         {animate && (
@@ -146,7 +146,7 @@ export function BentoGrid({ activeTab, projects, pillars }: BentoGridProps) {
           />
         )}
         {filtered.length === 0 && (
-          <p className="relative rounded-2xl border border-dashed border-white/10 px-6 py-16 text-center font-mono text-sm text-slate-500">
+          <p className="relative rounded-2xl border border-dashed border-white/10 px-6 py-16 text-center font-mono text-sm text-slate-400">
             {"// no projects in "}
             <span className="text-slate-300">{pillars.find((p) => p.id === activeTab)?.title ?? activeTab}</span>
             {" yet"}

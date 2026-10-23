@@ -104,13 +104,13 @@ function HeroLayer({ system, pillars }: { system: boolean; pillars: HeroPillar[]
 function DataPanel({ pillars }: { pillars: HeroPillar[] }) {
   return (
     <div className="absolute bottom-16 right-8 z-10 hidden w-[420px] font-mono text-[12px] leading-6 lg:block xl:right-[max(2rem,calc((100vw-72rem)/2))]">
-      <div className="text-slate-500">{"// app/page.tsx — what this hero is rendered from"}</div>
+      <div className="text-slate-400">{"// app/page.tsx — what this hero is rendered from"}</div>
       <div>
         <span className="text-cyan-300">const</span> <span className="text-slate-200">pillars</span> ={" "}
         <span className="text-cyan-300">await</span> <span className="text-sky-100">db.pillar.findMany</span>
         <span className="text-slate-300">();</span>
       </div>
-      <div className="text-slate-500">{`// → ${pillars.length} rows`}</div>
+      <div className="text-slate-400">{`// → ${pillars.length} rows`}</div>
       <div className="text-slate-300">[</div>
       {pillars.slice(0, MAX_ROWS).map((p) => (
         <div key={p.id} className="pl-4 text-slate-300">
@@ -121,7 +121,7 @@ function DataPanel({ pillars }: { pillars: HeroPillar[] }) {
           {" },"}
         </div>
       ))}
-      {pillars.length > MAX_ROWS && <div className="pl-4 text-slate-500">{`// …+${pillars.length - MAX_ROWS} more`}</div>}
+      {pillars.length > MAX_ROWS && <div className="pl-4 text-slate-400">{`// …+${pillars.length - MAX_ROWS} more`}</div>}
       <div className="text-slate-300">]</div>
     </div>
   );
@@ -249,7 +249,7 @@ export function Hero({ pillars }: { pillars: HeroPillar[] }) {
         style={{ x: rimX, y: rimY, width: rimSize, height: rimSize }}
       />
 
-      <p className="absolute bottom-6 left-1/2 z-30 -translate-x-1/2 whitespace-nowrap font-mono text-[11px] text-slate-500">
+      <p className="absolute bottom-6 left-1/2 z-30 -translate-x-1/2 whitespace-nowrap font-mono text-[11px] text-slate-400">
         {canHover ? "move your cursor — see the system behind the screen" : "drag — see the system behind the screen"}
       </p>
     </section>

@@ -5,6 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Sparkles, Loader2, Download, FileWarning } from "lucide-react";
 import { capture } from "@/lib/analytics";
 
+// Matches the limits enforced by /api/generate-resume.
+const MIN_CHARS = 20;
+const MAX_CHARS = 6000;
+
 interface ResumeData {
   name: string;
   email: string;
@@ -154,6 +158,7 @@ function ResumePreview({ data }: { data: ResumeData }) {
 
 export function ResumeModal({ isOpen, onClose }: ResumeModalProps) {
   const [jobDescription, setJobDescription] = useState("");
+  const [website, setWebsite] = useState(""); // honeypot: hidden from people, bots fill it in
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [resumeData, setResumeData] = useState<ResumeData | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
@@ -168,8 +173,11 @@ export function ResumeModal({ isOpen, onClose }: ResumeModalProps) {
     }
   }, [isOpen]);
 
+  const descriptionLength = jobDescription.trim().length;
+  const descriptionValid = descriptionLength >= MIN_CHARS && descriptionLength <= MAX_CHARS;
+
   const handleGenerate = async () => {
-    if (!jobDescription.trim()) return;
+    if (!descriptionValid) return;
 
     setStatus("loading");
     capture("resume_generate_started");
@@ -178,7 +186,7 @@ export function ResumeModal({ isOpen, onClose }: ResumeModalProps) {
       const res = await fetch("/api/generate-resume", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jobDescription }),
+        body: JSON.stringify({ jobDescription, website }),
       });
 
       const data = await res.json();
@@ -266,18 +274,43 @@ export function ResumeModal({ isOpen, onClose }: ResumeModalProps) {
           <div className="p-5 md:p-6 overflow-y-auto flex-1">
             {status === "idle" && (
               <div className="space-y-4">
-                <label className="block text-sm font-medium text-slate-300">
+                <label htmlFor="resume-job-description" className="block text-sm font-medium text-slate-300">
                   What do you want to hire me for?
                 </label>
                 <textarea
+                  id="resume-job-description"
                   value={jobDescription}
                   onChange={(e) => setJobDescription(e.target.value)}
+                  maxLength={MAX_CHARS}
+                  aria-describedby="resume-job-description-hint"
+                  aria-invalid={descriptionLength > 0 && !descriptionValid}
                   placeholder="Paste a job description or describe the role you are hiring for..."
                   className="w-full h-40 bg-slate-950/50 border border-slate-700 rounded-xl p-4 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 resize-none text-sm"
                 />
+                <p id="resume-job-description-hint" className="flex justify-between text-xs text-slate-400">
+                  <span>
+                    {descriptionLength > 0 && descriptionLength < MIN_CHARS
+                      ? `A little more detail, please (at least ${MIN_CHARS} characters).`
+                      : "Paste the job post or a few lines about the role."}
+                  </span>
+                  <span className="tabular-nums">
+                    {descriptionLength}/{MAX_CHARS}
+                  </span>
+                </p>
+                {/* Honeypot: off-screen and skipped by keyboard and screen readers */}
+                <input
+                  type="text"
+                  name="website"
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  className="absolute -left-[9999px] h-0 w-0 opacity-0"
+                />
                 <button
                   onClick={handleGenerate}
-                  disabled={!jobDescription.trim()}
+                  disabled={!descriptionValid}
                   className="w-full py-3 bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 disabled:hover:bg-cyan-600 text-white font-medium rounded-xl shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                 >
                   <Sparkles size={18} />

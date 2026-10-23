@@ -72,6 +72,8 @@ export const metadata: Metadata = {
 
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { AnalyticsLoader } from "@/components/AnalyticsLoader";
+import { ConsentBanner } from "@/components/ConsentBanner";
+import { Footer } from "@/components/layout/Footer";
 
 export default async function RootLayout({
   children,
@@ -111,6 +113,8 @@ export default async function RootLayout({
         <main className="flex-1 w-full max-w-[1600px] mx-auto px-4 md:px-8 lg:px-12">
           {children}
         </main>
+        <Footer />
+        <ConsentBanner />
       </body>
     </html>
   );

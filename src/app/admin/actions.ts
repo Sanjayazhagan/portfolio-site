@@ -3,8 +3,13 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcrypt";
+import { requireAdmin } from "@/lib/auth";
+
+// Every action checks the session itself. The /admin proxy guard alone is not enough:
+// Server Actions are POST endpoints, and a matcher change could silently stop covering them.
 
 export async function saveProject(data: any) {
+  await requireAdmin();
   const { id, pillars, tags, ...rest } = data;
   const dbData = {
     ...rest,
@@ -25,12 +30,14 @@ export async function saveProject(data: any) {
 }
 
 export async function deleteProject(id: string) {
+  await requireAdmin();
   await prisma.project.delete({ where: { id } });
   revalidatePath("/");
   revalidatePath("/admin");
 }
 
 export async function saveExperience(data: any) {
+  await requireAdmin();
   const { id, ...rest } = data;
   if (id) {
     await prisma.experience.update({ where: { id }, data: rest });
@@ -42,12 +49,14 @@ export async function saveExperience(data: any) {
 }
 
 export async function deleteExperience(id: string) {
+  await requireAdmin();
   await prisma.experience.delete({ where: { id } });
   revalidatePath("/");
   revalidatePath("/admin");
 }
 
 export async function savePillar(data: any) {
+  await requireAdmin();
   const { id, ...rest } = data;
   // Upsert since id might be provided for a new pillar (it's a string slug usually)
   await prisma.pillar.upsert({
@@ -60,12 +69,17 @@ export async function savePillar(data: any) {
 }
 
 export async function deletePillar(id: string) {
+  await requireAdmin();
   await prisma.pillar.delete({ where: { id } });
   revalidatePath("/");
   revalidatePath("/admin");
 }
 
 export async function changePassword(email: string, oldPass: string, newPass: string) {
+  const session = await requireAdmin();
+  // Only the signed-in admin can change their own password.
+  if (session.user?.email !== email) throw new Error("Unauthorized");
+  if (newPass.length < 8) throw new Error("New password must be at least 8 characters");
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) throw new Error("User not found");
 
@@ -81,6 +95,7 @@ export async function changePassword(email: string, oldPass: string, newPass: st
 }
 
 export async function saveLog(data: any) {
+  await requireAdmin();
   const { id, pillars, projectIds, ...rest } = data;
   const dbData = {
     ...rest,
@@ -101,6 +116,7 @@ export async function saveLog(data: any) {
 }
 
 export async function deleteLog(id: string) {
+  await requireAdmin();
   await prisma.log.delete({ where: { id } });
   revalidatePath("/");
   revalidatePath("/admin");

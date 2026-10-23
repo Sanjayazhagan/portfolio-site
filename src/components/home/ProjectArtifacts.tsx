@@ -70,7 +70,7 @@ function Tokens({ active }: { active: boolean }) {
   const tokens = ["const", "fix", "=", "await", "copilot", ".", "suggest", "(", "ctx", ")"];
   return (
     <div className="font-mono text-[11px]">
-      <div className="text-slate-500">› tighten this loop</div>
+      <div className="text-slate-400">› tighten this loop</div>
       <div className="mt-2 flex flex-wrap gap-1">
         {tokens.map((t, i) => (
           <motion.span
@@ -146,7 +146,7 @@ function Trace({ active }: { active: boolean }) {
     { label: "db", left: 34, width: 26 },
   ];
   return (
-    <div className="space-y-1.5 font-mono text-[10px] text-slate-500">
+    <div className="space-y-1.5 font-mono text-[10px] text-slate-400">
       {rows.map((r, i) => (
         <div key={r.label} className="flex items-center gap-2">
           <span className="w-10 shrink-0">{r.label}</span>

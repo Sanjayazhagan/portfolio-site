@@ -132,7 +132,7 @@ export function ExperienceTimeline({ experiences }: { experiences: Experience[] 
     <section id="experience" className="py-12">
       <div className="mb-8 flex items-baseline justify-between px-2">
         <GhostTitle className="text-3xl font-bold tracking-tight text-white md:text-5xl">Experience</GhostTitle>
-        <span className="font-mono text-xs text-slate-500">{n} commits</span>
+        <span className="font-mono text-xs text-slate-400">{n} commits</span>
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#070d1a]/80 backdrop-blur">
@@ -140,7 +140,7 @@ export function ExperienceTimeline({ experiences }: { experiences: Experience[] 
           <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
           <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
           <span className="h-2.5 w-2.5 rounded-full bg-white/15" />
-          <span className="ml-3 font-mono text-[11px] text-slate-500">~/career</span>
+          <span className="ml-3 font-mono text-[11px] text-slate-400">~/career</span>
         </div>
 
         <div className="px-4 pb-6 pt-5 md:px-6">
@@ -154,7 +154,7 @@ export function ExperienceTimeline({ experiences }: { experiences: Experience[] 
             ))}
           </ol>
 
-          <div className="mt-2 font-mono text-[12px] text-slate-600">(END)</div>
+          <div className="mt-2 font-mono text-[12px] text-slate-400">(END)</div>
         </div>
       </div>
     </section>
