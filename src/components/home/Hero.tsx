@@ -55,12 +55,14 @@ function HeroLayer({ system, pillars }: { system: boolean; pillars: HeroPillar[]
   const secondary = system
     ? "border border-dashed border-cyan-300/40 text-cyan-200/80"
     : "border border-white/10 text-slate-300 hover:border-white/25 hover:text-white";
+  const Title = system ? "div" : "h1";
   const button = "inline-flex h-12 items-center gap-2 rounded-full px-6 text-[15px] font-semibold transition-[transform,background-color,color,border-color] duration-150";
 
   return (
     <div className="relative z-10 mx-auto w-full max-w-6xl px-4 py-16 md:px-8">
       <Bounds system={system} label="<h1> · Montserrat 900 · clamp(56px, 11vw, 168px)" className="w-fit">
-        <h1
+        {/* The x-ray copy is decorative, so only the visible layer is a real <h1> */}
+        <Title
           className={`text-[clamp(56px,11vw,168px)] font-black leading-[0.86] tracking-[-0.02em] ${
             system ? "text-transparent [-webkit-text-stroke:1.25px_rgba(103,232,249,0.9)]" : "text-white"
           }`}
@@ -69,7 +71,7 @@ function HeroLayer({ system, pillars }: { system: boolean; pillars: HeroPillar[]
           Sanjay
           <br />
           Azhagan
-        </h1>
+        </Title>
       </Bounds>
 
       <Bounds system={system} label={`<p> · built from ${pillars.length} pillars in the db`} className="mt-12 max-w-xl">

@@ -92,8 +92,15 @@ export function HomeContent({ projects, pillars, experiences, logs }: { projects
       <div className="relative">
         <Hero pillars={pillars} />
         <div className="flex flex-col gap-12 w-full max-w-6xl mx-auto px-4 md:px-8">
-          <PillarTabs activeTab={activeTab} setActiveTab={setActiveTab} pillars={pillars} projects={projects} />
-          <BentoGrid activeTab={activeTab} projects={projects} pillars={pillars} />
+          <div id="pillars" className="scroll-mt-28">
+            <PillarTabs activeTab={activeTab} setActiveTab={setActiveTab} pillars={pillars} projects={projects} />
+          </div>
+          {/* The cards fly in from off-axis; clip them at the screen edge so phones can't scroll sideways */}
+          <div className="relative left-1/2 w-screen -translate-x-1/2 overflow-x-clip">
+            <div className="mx-auto w-full max-w-6xl px-4 md:px-8">
+              <BentoGrid activeTab={activeTab} projects={projects} pillars={pillars} />
+            </div>
+          </div>
           <ExperienceTimeline experiences={experiences} />
         </div>
 

@@ -91,7 +91,7 @@ function Tokens({ active }: { active: boolean }) {
 function Blocks({ active, seed }: { active: boolean; seed: string }) {
   const count = 4; // three settled blocks + the one that lands on hover; fits the narrow cells
   return (
-    <div className="flex items-center gap-1 font-mono text-[10px]">
+    <div className="flex items-center gap-1 overflow-hidden font-mono text-[10px]">
       {Array.from({ length: count }, (_, i) => {
         const isNew = i === count - 1;
         // The newest block (and its link) only lands when the card is active.
