@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useSyncExternalStore } from "react";
 import { motion, useScroll, useSpring, useTransform, useMotionValue, useMotionValueEvent } from "framer-motion";
 import { GlassCard } from "@/components/ui/GlassCard";
 import ReactMarkdown from "react-markdown";
@@ -42,20 +42,32 @@ const KaggleIcon = ({ size = 18 }: { size?: number }) => (
   </svg>
 );
 
+function subscribeToResize(onChange: () => void) {
+  window.addEventListener("resize", onChange);
+  return () => window.removeEventListener("resize", onChange);
+}
+
 export function LogTimeline({ logs }: { logs: Log[] }) {
+  if (!logs || logs.length === 0) {
+    return (
+      <div id="logs" className="py-12 text-center text-slate-400 font-medium">
+        No engineering logs recorded for this pillar yet.
+      </div>
+    );
+  }
+  // Hooks live in the inner component so they always run in the same order.
+  return <Timeline logs={logs} />;
+}
+
+function Timeline({ logs }: { logs: Log[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [stickyHeight, setStickyHeight] = useState(600);
+  // Server snapshot (800) keeps the pre-hydration height at the old 600px default.
+  const viewportHeight = useSyncExternalStore(subscribeToResize, () => window.innerHeight, () => 800);
+  const stickyHeight = viewportHeight - 200;
   const [activeIndex, setActiveIndex] = useState(0);
   const [isParked, setIsParked] = useState(true);
   const [measurements, setMeasurements] = useState<{top: number, bottom: number}[]>([]);
-
-  useEffect(() => {
-    setStickyHeight(window.innerHeight - 200);
-    const handleResize = () => setStickyHeight(window.innerHeight - 200);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   useEffect(() => {
     const measure = () => {
@@ -76,14 +88,6 @@ export function LogTimeline({ logs }: { logs: Log[] }) {
     window.addEventListener("resize", measure);
     return () => window.removeEventListener("resize", measure);
   }, [logs]);
-
-  if (!logs || logs.length === 0) {
-    return (
-      <div id="logs" className="py-12 text-center text-slate-400 font-medium">
-        No engineering logs recorded for this pillar yet.
-      </div>
-    );
-  }
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
