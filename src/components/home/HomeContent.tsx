@@ -90,7 +90,7 @@ export function HomeContent({ projects, pillars, experiences, logs }: { projects
     <div className="relative">
       <Hero />
       <div className="flex flex-col gap-12 w-full max-w-6xl mx-auto px-4 md:px-8">
-        <div className="flex flex-col items-center">
+        <div id="pillars" className="flex flex-col items-center scroll-mt-28">
           <PillarTabs activeTab={activeTab} setActiveTab={setActiveTab} pillars={pillars} />
         </div>
         <BentoGrid activeTab={activeTab} projects={projects} pillars={pillars} />

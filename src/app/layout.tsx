@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     template: '%s | Sanjay Azhagan',
   },
   description:
-    'Portfolio of Sanjay Azhagan, a passionate Software Engineering Intern specializing in Next.js, React, Distributed Systems, and AI technologies. Explore my projects including VeriLaw and React applications.',
+    'Portfolio of Sanjay Azhagan, a software engineering intern building with Next.js, React, distributed systems and AI. Explore projects including VeriLaw.',
   keywords: [
     'Sanjay Azhagan',
     'Next.js developer',
