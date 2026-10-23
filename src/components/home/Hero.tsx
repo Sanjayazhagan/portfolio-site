@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion, useMotionValue, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { useScrollStory } from "./useScrollStory";
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 
@@ -195,7 +196,28 @@ function CopilotEditor() {
   );
 }
 
+const ramp = (v: number, from: number, to: number) => Math.min(Math.max((v - from) / (to - from), 0), 1);
+
 export function Hero() {
+  const ref = useRef<HTMLElement>(null);
+  const { animate, wide } = useScrollStory();
+  // Desktop: the hero is a short scroll track; scrolling dives into the editor.
+  const dive = animate && wide;
+
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  // `dive` flips on after hydration, so it reaches the transforms as a motion value: they stay pure
+  // (no stale closure) and use the function form, which keeps them on the JS path. Framer's
+  // hardware-accelerated opacity binding attached late and tracked the whole page's scroll instead.
+  const diveOn = useMotionValue(0);
+  useEffect(() => diveOn.set(dive ? 1 : 0), [dive, diveOn]);
+  const track = [scrollYProgress, diveOn];
+  const textOpacity = useTransform(track, ([v, d]: number[]) => (d ? 1 - ramp(v, 0, 0.3) : 1));
+  const textY = useTransform(track, ([v, d]: number[]) => (d ? -48 * ramp(v, 0, 0.3) : 0));
+  // Slide from the right column to the centre (~48% of its own width) while growing.
+  const editorX = useTransform(track, ([v, d]: number[]) => `${d ? -48 * ramp(v, 0, 0.55) : 0}%`);
+  const editorScale = useTransform(track, ([v, d]: number[]) => (d ? 1 + 0.32 * ramp(v, 0, 0.55) : 1));
+  const stageOpacity = useTransform(track, ([v, d]: number[]) => (d ? 1 - ramp(v, 0.62, 0.95) : 1));
+
   const rise = (delay: number) => ({
     initial: { opacity: 0, y: 12 },
     animate: { opacity: 1, y: 0 },
@@ -203,51 +225,64 @@ export function Hero() {
   });
 
   return (
-    <section className="relative w-screen left-1/2 -translate-x-1/2 -mt-24 pt-24 min-h-[88vh] flex items-center overflow-hidden">
-      {/* Ground: one dark field with a single cool light source behind the editor */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(700px 480px at 72% 46%, rgba(34,211,238,0.10), transparent 65%), #020617",
-        }}
-      />
+    <section
+      ref={ref}
+      className={`relative w-screen left-1/2 -translate-x-1/2 -mt-24 overflow-x-clip ${dive ? "h-[185vh]" : "pt-24 min-h-[88vh] flex items-center"}`}
+    >
+      <motion.div
+        style={{ opacity: stageOpacity }}
+        className={dive ? "sticky top-0 flex h-screen items-center pt-24" : "contents"}
+      >
+        {/* Ground: one dark field with a single cool light source behind the editor */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(700px 480px at 72% 46%, rgba(34,211,238,0.10), transparent 65%), #020617",
+          }}
+        />
 
-      <div className="relative z-10 mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 px-4 py-10 md:px-8 md:py-16 lg:grid-cols-[1fr_1.15fr] lg:gap-16">
-        <div>
-          <motion.h1
-            {...rise(0)}
-            className="text-5xl font-black leading-[0.95] tracking-tight text-white md:text-7xl"
-            style={{ fontFamily: "var(--font-montserrat)" }}
-          >
-            Sanjay
-            <br />
-            Azhagan
-          </motion.h1>
-          <motion.p {...rise(0.08)} className="mt-6 max-w-md text-lg leading-relaxed text-slate-300 md:text-xl">
-            I build the systems behind the screen — models that reason, apps that ship, clouds that scale and contracts that settle.
-          </motion.p>
-          <motion.div {...rise(0.16)} className="mt-10 flex flex-wrap items-center gap-3">
-            <Link
-              href="#projects"
-              className="inline-flex h-12 items-center gap-2 rounded-full bg-cyan-400 px-6 text-[15px] font-semibold text-slate-950 transition-[transform,background-color] duration-150 hover:bg-cyan-300 active:scale-[0.97]"
+        <div className="relative z-10 mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-12 px-4 py-10 md:px-8 md:py-16 lg:grid-cols-[1fr_1.15fr] lg:gap-16">
+          <motion.div style={{ opacity: textOpacity, y: textY }}>
+            <motion.h1
+              {...rise(0)}
+              className="text-5xl font-black leading-[0.95] tracking-tight text-white md:text-7xl"
+              style={{ fontFamily: "var(--font-montserrat)" }}
             >
-              See the work <ArrowRight size={16} />
-            </Link>
-            <Link
-              href="/journal"
-              className="inline-flex h-12 items-center rounded-full border border-white/10 px-6 text-[15px] font-semibold text-slate-300 transition-colors duration-150 hover:border-white/25 hover:text-white"
+              Sanjay
+              <br />
+              Azhagan
+            </motion.h1>
+            <motion.p {...rise(0.08)} className="mt-6 max-w-md text-lg leading-relaxed text-slate-300 md:text-xl">
+              I build the systems behind the screen — models that reason, apps that ship, clouds that scale and contracts that settle.
+            </motion.p>
+            <motion.div {...rise(0.16)} className="mt-10 flex flex-wrap items-center gap-3">
+              <Link
+                href="#projects"
+                className="inline-flex h-12 items-center gap-2 rounded-full bg-cyan-400 px-6 text-[15px] font-semibold text-slate-950 transition-[transform,background-color] duration-150 hover:bg-cyan-300 active:scale-[0.97]"
+              >
+                See the work <ArrowRight size={16} />
+              </Link>
+              <Link
+                href="/journal"
+                className="inline-flex h-12 items-center rounded-full border border-white/10 px-6 text-[15px] font-semibold text-slate-300 transition-colors duration-150 hover:border-white/25 hover:text-white"
+              >
+                Read the journal
+              </Link>
+            </motion.div>
+          </motion.div>
+
+          <motion.div {...rise(0.12)}>
+            <motion.div
+              style={{ x: editorX, scale: editorScale }}
+              className="origin-center will-change-transform"
             >
-              Read the journal
-            </Link>
+              <CopilotEditor />
+            </motion.div>
           </motion.div>
         </div>
-
-        <motion.div {...rise(0.12)}>
-          <CopilotEditor />
-        </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 }

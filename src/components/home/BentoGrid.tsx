@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useRef, useState, type ReactNode } from "react";
+import { motion, AnimatePresence, cubicBezier, useScroll, useTransform, type MotionValue } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { cn } from "@/lib/utils";
 import { matchesPillar, showcased, type PillarLike } from "@/lib/pillars";
 import { ProjectArtifact, artifactFor } from "./ProjectArtifacts";
+import { useScrollStory } from "./useScrollStory";
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 
@@ -92,34 +93,86 @@ function BentoCard({ project, pillars, featured }: { project: Project; pillars: 
   );
 }
 
+// Where each card starts in the "exploded" diagram before scroll pulls it into place.
+const SCATTER = [
+  { x: -90, y: 70, r: -4 },
+  { x: 120, y: -50, r: 5 },
+  { x: 130, y: 80, r: 3 },
+  { x: -50, y: 130, r: -2 },
+  { x: 90, y: 120, r: 4 },
+  { x: -120, y: -40, r: -5 },
+];
+// ease-in-out: this is on-screen movement scrubbed by scroll, not an entrance
+const settle = cubicBezier(0.45, 0, 0.55, 1);
+
+function Assemble({ progress, index, magnitude, children }: { progress: MotionValue<number>; index: number; magnitude: number; children: ReactNode }) {
+  const v = SCATTER[index % SCATTER.length];
+  const x = useTransform(progress, [0, 1], [v.x * magnitude, 0], { ease: settle });
+  const y = useTransform(progress, [0, 1], [v.y * magnitude, 0], { ease: settle });
+  const rotate = useTransform(progress, [0, 1], [v.r * magnitude, 0], { ease: settle });
+  const scale = useTransform(progress, [0, 1], [0.92, 1], { ease: settle });
+  const opacity = useTransform(progress, [0, 0.6], [0.2, 1]);
+  return (
+    <motion.div className="h-full" style={{ x, y, rotate, scale, opacity }}>
+      {children}
+    </motion.div>
+  );
+}
+
 export function BentoGrid({ activeTab, projects, pillars }: BentoGridProps) {
   const filtered = showcased(projects).filter((p) => matchesPillar(p, activeTab, pillars));
+  const ref = useRef<HTMLElement>(null);
+  const { animate, wide } = useScrollStory();
+  // 0 while the section's top is still low on screen (70%), 1 once it has risen near the top (10%),
+  // so the cards come together while you can actually see them.
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 70%", "start 10%"] });
+  const blueprint = useTransform(scrollYProgress, [0, 1], [0.7, 0]);
+  const magnitude = wide ? 1 : 0.35;
 
   return (
-    <section id="projects" className="pb-12">
+    <section ref={ref} id="projects" className="pb-12">
       <div className="mb-8 flex items-baseline justify-between px-2">
         <h2 className="text-3xl font-bold tracking-tight text-white" style={{ fontFamily: "var(--font-montserrat)" }}>
           Selected work
         </h2>
         <span className="font-mono text-xs text-slate-500">{String(filtered.length).padStart(2, "0")} projects</span>
       </div>
-      <motion.div layout className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:auto-rows-[minmax(220px,auto)] lg:grid-cols-6">
-        <AnimatePresence mode="popLayout">
-          {filtered.map((project, i) => (
-            <motion.div
-              layout
-              key={project.id}
-              initial={{ opacity: 0, scale: 0.97 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.97 }}
-              transition={{ duration: 0.25, ease: EASE_OUT }}
-              className={spanFor(i, filtered.length)}
-            >
-              <BentoCard project={project} pillars={pillars} featured={i === 0 && filtered.length >= 3} />
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </motion.div>
+      <div className="relative">
+        {animate && (
+          // Blueprint dots under the parts while they're still apart
+          <motion.div
+            aria-hidden
+            style={{ opacity: blueprint }}
+            className="pointer-events-none absolute -inset-8 rounded-3xl [background-image:radial-gradient(rgba(34,211,238,0.35)_1px,transparent_1px)] [background-size:22px_22px]"
+          />
+        )}
+        <motion.div layout className="relative grid grid-cols-1 gap-4 md:grid-cols-2 lg:auto-rows-[minmax(220px,auto)] lg:grid-cols-6">
+          <AnimatePresence mode="popLayout">
+            {filtered.map((project, i) => {
+              const card = <BentoCard project={project} pillars={pillars} featured={i === 0 && filtered.length >= 3} />;
+              return (
+                <motion.div
+                  layout
+                  key={project.id}
+                  initial={{ opacity: 0, scale: 0.97 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.97 }}
+                  transition={{ duration: 0.25, ease: EASE_OUT }}
+                  className={spanFor(i, filtered.length)}
+                >
+                  {animate ? (
+                    <Assemble progress={scrollYProgress} index={i} magnitude={magnitude}>
+                      {card}
+                    </Assemble>
+                  ) : (
+                    card
+                  )}
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </motion.div>
+      </div>
     </section>
   );
 }
