@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { matchesPillar, showcased, type PillarLike } from "@/lib/pillars";
 import { ProjectArtifact, artifactFor } from "./ProjectArtifacts";
 import { useScrollStory } from "./useScrollStory";
+import { GhostTitle } from "./GhostTitle";
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 
@@ -132,9 +133,7 @@ export function BentoGrid({ activeTab, projects, pillars }: BentoGridProps) {
   return (
     <section ref={ref} id="projects" className="pb-12">
       <div className="mb-8 flex items-baseline justify-between px-2">
-        <h2 className="text-3xl font-bold tracking-tight text-white" style={{ fontFamily: "var(--font-montserrat)" }}>
-          Selected work
-        </h2>
+        <GhostTitle className="text-3xl font-bold tracking-tight text-white md:text-5xl">Selected work</GhostTitle>
         <span className="font-mono text-xs text-slate-500">{String(filtered.length).padStart(2, "0")} projects</span>
       </div>
       <div className="relative">
@@ -145,6 +144,13 @@ export function BentoGrid({ activeTab, projects, pillars }: BentoGridProps) {
             style={{ opacity: blueprint }}
             className="pointer-events-none absolute -inset-8 rounded-3xl [background-image:radial-gradient(rgba(34,211,238,0.35)_1px,transparent_1px)] [background-size:22px_22px]"
           />
+        )}
+        {filtered.length === 0 && (
+          <p className="relative rounded-2xl border border-dashed border-white/10 px-6 py-16 text-center font-mono text-sm text-slate-500">
+            {"// no projects in "}
+            <span className="text-slate-300">{pillars.find((p) => p.id === activeTab)?.title ?? activeTab}</span>
+            {" yet"}
+          </p>
         )}
         <motion.div layout className="relative grid grid-cols-1 gap-4 md:grid-cols-2 lg:auto-rows-[minmax(220px,auto)] lg:grid-cols-6">
           <AnimatePresence mode="popLayout">

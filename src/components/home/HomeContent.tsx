@@ -90,7 +90,7 @@ export function HomeContent({ projects, pillars, experiences, logs }: { projects
   return (
     <MotionConfig reducedMotion="user">
       <div className="relative">
-        <Hero />
+        <Hero pillars={pillars} />
         <div className="flex flex-col gap-12 w-full max-w-6xl mx-auto px-4 md:px-8">
           <PillarTabs activeTab={activeTab} setActiveTab={setActiveTab} pillars={pillars} projects={projects} />
           <BentoGrid activeTab={activeTab} projects={projects} pillars={pillars} />

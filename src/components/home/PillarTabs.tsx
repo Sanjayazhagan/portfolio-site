@@ -1,68 +1,85 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
 import { matchesPillar, showcased, type PillarLike, type ProjectLike } from "@/lib/pillars";
+
+type IndexPillar = PillarLike & { summary?: string | null };
 
 interface PillarTabsProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
-  pillars: PillarLike[];
+  pillars: IndexPillar[];
   projects: ProjectLike[];
 }
 
+// Kinetic-type index: one row per pillar from the database, the word itself is the control.
+// Montserrat is loaded as a variable font, so weight and tracking morph smoothly on hover.
 export function PillarTabs({ activeTab, setActiveTab, pillars, projects }: PillarTabsProps) {
-  const tabs: PillarLike[] = [{ id: "All", title: "All" }, ...pillars];
+  const [hovered, setHovered] = useState<string | null>(null);
   const visible = showcased(projects);
-  const activeTitle = tabs.find((t) => t.id === activeTab)?.title ?? "All";
+  const rows: IndexPillar[] = [
+    {
+      id: "All",
+      title: "Everything",
+      summary: `${visible.length} projects across ${pillars.length} pillars.`,
+    },
+    ...pillars,
+  ];
+  const lit = hovered ?? activeTab;
 
   return (
-    <div className="-mb-6 flex w-full flex-col items-center gap-4 pt-10">
-      {/* The filter reads as the command it is */}
-      <div className="font-mono text-xs text-slate-500" aria-hidden>
-        <span className="text-cyan-400/80">$</span> ls work --pillar=
-        <span className="text-slate-200">{activeTab === "All" ? "*" : activeTitle.toLowerCase()}</span>
+    <section aria-label="Filter projects by pillar" className="w-full pt-16">
+      <div className="mb-3 flex items-baseline justify-between px-1 font-mono text-[11px] uppercase tracking-[0.2em] text-slate-500">
+        <span>Index — pick a pillar</span>
+        <span>{String(pillars.length).padStart(2, "0")} pillars</span>
       </div>
 
-      <div
-        role="tablist"
-        aria-label="Filter projects by pillar"
-        className="flex flex-wrap justify-center gap-1 rounded-full border border-white/10 bg-slate-900/60 p-1 backdrop-blur"
-      >
-        {tabs.map((tab) => {
-          const active = activeTab === tab.id;
-          const count = visible.filter((p) => matchesPillar(p, tab.id, pillars)).length;
+      <ul role="tablist" aria-label="Pillars" className="border-t border-white/10" onMouseLeave={() => setHovered(null)}>
+        {rows.map((row, i) => {
+          const active = activeTab === row.id;
+          const isLit = lit === row.id;
+          const count = visible.filter((p) => matchesPillar(p, row.id, pillars)).length;
           return (
-            <button
-              key={tab.id}
-              role="tab"
-              aria-selected={active}
-              onClick={() => setActiveTab(tab.id)}
-              className={cn(
-                "relative flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-colors duration-150",
-                active ? "text-white" : "text-slate-400 hover:text-slate-200"
-              )}
-            >
-              {active && (
-                <motion.span
-                  layoutId="pillar-pill"
-                  className="absolute inset-0 rounded-full bg-white/[0.07] ring-1 ring-cyan-400/40"
-                  transition={{ type: "spring", stiffness: 520, damping: 42 }}
-                />
-              )}
-              <span className="relative">{tab.title}</span>
-              <span
-                className={cn(
-                  "relative font-mono text-[11px] tabular-nums",
-                  active ? "text-cyan-300" : "text-slate-600"
-                )}
+            <li key={row.id} role="presentation" className="border-b border-white/10">
+              <button
+                role="tab"
+                aria-selected={active}
+                onClick={() => setActiveTab(row.id)}
+                onMouseEnter={() => setHovered(row.id)}
+                onFocus={() => setHovered(row.id)}
+                onBlur={() => setHovered(null)}
+                className="grid w-full grid-cols-[2.5rem_1fr_auto] items-baseline gap-3 py-2 text-left outline-none focus-visible:bg-white/[0.03] md:grid-cols-[3.5rem_1fr_auto] md:gap-6"
               >
-                {count}
-              </span>
-            </button>
+                <span className="font-mono text-[11px] tabular-nums text-slate-600">{String(i).padStart(2, "0")}</span>
+                <span
+                  className="text-[clamp(34px,5.6vw,80px)] leading-[1.05] transition-[font-weight,letter-spacing,color] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]"
+                  style={{
+                    fontFamily: "var(--font-montserrat)",
+                    fontWeight: isLit || active ? 900 : 300,
+                    letterSpacing: isLit || active ? "-0.035em" : "0em",
+                    color: active ? "#67e8f9" : isLit ? "#ffffff" : "rgba(148,163,184,0.45)",
+                  }}
+                >
+                  {row.title}
+                </span>
+                <span className={`font-mono text-[11px] tabular-nums transition-colors duration-200 ${isLit || active ? "text-cyan-300" : "text-slate-600"}`}>
+                  {String(count).padStart(2, "0")} {count === 1 ? "project" : "projects"}
+                </span>
+              </button>
+              {/* The pillar's own summary from the db unfolds under the word */}
+              <div
+                className={`grid transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+                  isLit && row.summary ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                }`}
+              >
+                <p className="overflow-hidden pb-0 pl-[calc(2.5rem+0.75rem)] text-sm text-slate-400 md:pl-[calc(3.5rem+1.5rem)] md:text-base">
+                  <span className="block pb-4">{row.summary}</span>
+                </p>
+              </div>
+            </li>
           );
         })}
-      </div>
-    </div>
+      </ul>
+    </section>
   );
 }

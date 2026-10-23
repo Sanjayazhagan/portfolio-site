@@ -15,16 +15,6 @@ body {
   color: var(--foreground);
 }
 
-@keyframes caret-blink {
-  50% { opacity: 0; }
-}
-.caret-blink {
-  animation: caret-blink 1s steps(1) infinite;
-}
-@media (prefers-reduced-motion: reduce) {
-  .caret-blink { animation: none; }
-}
-
 /* Hide scrollbar but keep scrollability */
 .no-scrollbar::-webkit-scrollbar {
   display: none;

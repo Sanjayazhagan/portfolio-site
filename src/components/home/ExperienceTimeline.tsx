@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { motion, useMotionValue, useScroll, useTransform, type MotionValue } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import { useScrollStory } from "./useScrollStory";
+import { GhostTitle } from "./GhostTitle";
 
 type Experience = {
   id: string;
@@ -130,9 +131,7 @@ export function ExperienceTimeline({ experiences }: { experiences: Experience[] 
   return (
     <section id="experience" className="py-12">
       <div className="mb-8 flex items-baseline justify-between px-2">
-        <h2 className="text-3xl font-bold tracking-tight text-white" style={{ fontFamily: "var(--font-montserrat)" }}>
-          Experience
-        </h2>
+        <GhostTitle className="text-3xl font-bold tracking-tight text-white md:text-5xl">Experience</GhostTitle>
         <span className="font-mono text-xs text-slate-500">{n} commits</span>
       </div>
 
