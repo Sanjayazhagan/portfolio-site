@@ -18,7 +18,7 @@ export function OverallJourney({ pillars, allLogs }: { pillars: any[], allLogs: 
 
 
   return (
-    <section id="journal" className="pt-4 pb-0">
+    <section className="pt-4 pb-0">
       <motion.h2
         className="text-2xl font-bold tracking-tight text-white mb-8 px-2 md:hidden"
         initial={{ opacity: 0, y: 20 }}

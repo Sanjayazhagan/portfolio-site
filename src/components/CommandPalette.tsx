@@ -60,7 +60,7 @@ export function CommandPalette({ isOpen, onClose, projects, pillars }: CommandPa
                   </button>
                 </div>
                 <div className="max-h-[60vh] overflow-y-auto p-2">
-                  <div className="px-2 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <div className="px-2 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">
                     Pillars
                   </div>
                   {pillars.map((pillar) => (
@@ -74,7 +74,7 @@ export function CommandPalette({ isOpen, onClose, projects, pillars }: CommandPa
                     </Link>
                   ))}
                   
-                  <div className="px-2 py-2 mt-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <div className="px-2 py-2 mt-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">
                     Projects
                   </div>
                   {projects.map((project) => (
