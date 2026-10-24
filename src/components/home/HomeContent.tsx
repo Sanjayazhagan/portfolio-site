@@ -3,9 +3,18 @@
 import { useState, useEffect } from "react";
 import { MotionConfig } from "framer-motion";
 import { Hero } from "./Hero";
+import { HeroClassic } from "./HeroClassic";
+import { HeroEditor } from "./HeroEditor";
 import { PillarTabs } from "./PillarTabs";
+import { PillarTabsClassic } from "./PillarTabsClassic";
+import { PillarTabsConsole } from "./PillarTabsConsole";
 import { BentoGrid } from "./BentoGrid";
+import { BentoGridClassic } from "./BentoGridClassic";
 import { ExperienceTimeline } from "./ExperienceTimeline";
+import { ExperienceTimelineClassic } from "./ExperienceTimelineClassic";
+import { ScrollMotion } from "./useScrollStory";
+import { useIdea } from "@/lib/ideas";
+import { IdeasPanel } from "./IdeasPanel";
 import dynamic from "next/dynamic";
 
 const OverallJourney = dynamic(
@@ -86,22 +95,47 @@ function SidebarNav() {
 
 export function HomeContent({ projects, pillars, experiences, logs }: { projects: any[], pillars: any[], experiences: any[], logs: any[] }) {
   const [activeTab, setActiveTab] = useState("All");
+  const heroIdea = useIdea("hero");
+  const pillarsIdea = useIdea("pillars");
+  const projectsIdea = useIdea("projects");
+  const experienceIdea = useIdea("experience");
 
   return (
     <MotionConfig reducedMotion="user">
       <div className="relative">
-        <Hero pillars={pillars} />
+        {/* Each section renders the version picked in the Ideas panel (preview branch only) */}
+        {heroIdea === "classic" && <HeroClassic />}
+        {(heroIdea === "editor" || heroIdea === "dive") && (
+          <ScrollMotion.Provider value={heroIdea === "dive"}>
+            <HeroEditor />
+          </ScrollMotion.Provider>
+        )}
+        {heroIdea === "xray" && <Hero pillars={pillars} />}
         <div className="flex flex-col gap-12 w-full max-w-6xl mx-auto px-4 md:px-8">
-          <div id="pillars" className="scroll-mt-28">
-            <PillarTabs activeTab={activeTab} setActiveTab={setActiveTab} pillars={pillars} projects={projects} />
+          <div id="pillars" className={pillarsIdea === "classic" ? "flex flex-col items-center scroll-mt-28" : "scroll-mt-28"}>
+            {pillarsIdea === "classic" && <PillarTabsClassic activeTab={activeTab} setActiveTab={setActiveTab} pillars={pillars} />}
+            {pillarsIdea === "console" && <PillarTabsConsole activeTab={activeTab} setActiveTab={setActiveTab} pillars={pillars} projects={projects} />}
+            {pillarsIdea === "kinetic" && <PillarTabs activeTab={activeTab} setActiveTab={setActiveTab} pillars={pillars} projects={projects} />}
           </div>
-          {/* The cards fly in from off-axis; clip them at the screen edge so phones can't scroll sideways */}
-          <div className="relative left-1/2 w-screen -translate-x-1/2 overflow-x-clip">
-            <div className="mx-auto w-full max-w-6xl px-4 md:px-8">
-              <BentoGrid activeTab={activeTab} projects={projects} pillars={pillars} />
+          {projectsIdea === "classic" ? (
+            <BentoGridClassic activeTab={activeTab} projects={projects} pillars={pillars} />
+          ) : (
+            /* The cards fly in from off-axis; clip them at the screen edge so phones can't scroll sideways */
+            <div className="relative left-1/2 w-screen -translate-x-1/2 overflow-x-clip">
+              <div className="mx-auto w-full max-w-6xl px-4 md:px-8">
+                <ScrollMotion.Provider value={projectsIdea === "assemble"}>
+                  <BentoGrid activeTab={activeTab} projects={projects} pillars={pillars} />
+                </ScrollMotion.Provider>
+              </div>
             </div>
-          </div>
-          <ExperienceTimeline experiences={experiences} />
+          )}
+          {experienceIdea === "classic" ? (
+            <ExperienceTimelineClassic experiences={experiences} />
+          ) : (
+            <ScrollMotion.Provider value={experienceIdea === "replay"}>
+              <ExperienceTimeline experiences={experiences} />
+            </ScrollMotion.Provider>
+          )}
         </div>
 
         {/* Overall Journey section — full-width breakout.
@@ -115,7 +149,9 @@ export function HomeContent({ projects, pillars, experiences, logs }: { projects
             <OverallJourney pillars={pillars} allLogs={logs} />
           </LazyMount>
         </div>
-        <SidebarNav />
+        {/* Re-mount when a section is swapped so the nav observes the new elements */}
+        <SidebarNav key={`${projectsIdea}-${experienceIdea}`} />
+        <IdeasPanel />
       </div>
     </MotionConfig>
   );
