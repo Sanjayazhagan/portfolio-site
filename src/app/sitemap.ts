@@ -3,6 +3,9 @@ import { getProjects, getPillars } from '@/lib/data';
 
 const baseUrl = 'https://sanjayazhagan.tech';
 
+// Projects and pillars come from the database, so rebuild the sitemap regularly instead of only at deploy time.
+export const revalidate = 600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [projects, pillars] = await Promise.all([getProjects(), getPillars()]);
 

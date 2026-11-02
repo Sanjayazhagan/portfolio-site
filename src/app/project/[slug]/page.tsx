@@ -27,6 +27,12 @@ const KaggleIcon = ({ size = 18 }: { size?: number }) => (
   </svg>
 );
 
+// Pages for new slugs are rendered on demand. Without a revalidate time Next keeps the result,
+// including a 404 for a slug visited before it existed, for a year (s-maxage=31536000). The admin
+// actions refresh the page right away; this makes it self-heal within a minute if that ever misses
+// (a project added outside the admin, a CDN that cached the 404, a restored backup).
+export const revalidate = 60;
+
 export async function generateStaticParams() {
   const projects = await getProjects();
   return projects.map((p) => ({

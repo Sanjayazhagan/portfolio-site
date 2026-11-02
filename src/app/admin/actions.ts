@@ -16,7 +16,9 @@ export async function saveProject(data: any) {
     pillars: JSON.stringify(pillars || []),
     tags: JSON.stringify(tags || []),
   };
-  
+
+  // A renamed slug leaves the old page behind, so refresh that one too.
+  const before = id ? await prisma.project.findUnique({ where: { id }, select: { slug: true } }) : null;
   if (id) {
     await prisma.project.update({ where: { id }, data: dbData });
   } else {
@@ -24,16 +26,19 @@ export async function saveProject(data: any) {
   }
   revalidatePath("/");
   revalidatePath("/admin");
-  if (data.slug) {
-    revalidatePath(`/project/${data.slug}`);
+  revalidatePath("/sitemap.xml");
+  for (const slug of new Set([data.slug, before?.slug])) {
+    if (slug) revalidatePath(`/project/${slug}`);
   }
 }
 
 export async function deleteProject(id: string) {
   await requireAdmin();
-  await prisma.project.delete({ where: { id } });
+  const deleted = await prisma.project.delete({ where: { id }, select: { slug: true } });
   revalidatePath("/");
   revalidatePath("/admin");
+  revalidatePath("/sitemap.xml");
+  revalidatePath(`/project/${deleted.slug}`);
 }
 
 export async function saveExperience(data: any) {
@@ -66,6 +71,8 @@ export async function savePillar(data: any) {
   });
   revalidatePath("/");
   revalidatePath("/admin");
+  revalidatePath("/sitemap.xml");
+  revalidatePath(`/pillar/${id}`);
 }
 
 export async function deletePillar(id: string) {
@@ -73,6 +80,8 @@ export async function deletePillar(id: string) {
   await prisma.pillar.delete({ where: { id } });
   revalidatePath("/");
   revalidatePath("/admin");
+  revalidatePath("/sitemap.xml");
+  revalidatePath(`/pillar/${id}`);
 }
 
 export async function changePassword(email: string, oldPass: string, newPass: string) {
