@@ -5,6 +5,8 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { ArrowUpRight, ExternalLink, Calendar } from "lucide-react";
 import Link from "next/link";
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
+import { InlineMarkdown } from "@/components/ui/InlineMarkdown";
+import { stripMarkdown } from "@/lib/utils";
 
 const GithubIcon = ({ size = 18 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -52,19 +54,20 @@ export async function generateMetadata(
   }
 
   const url = `/project/${project.slug}`;
+  const description = stripMarkdown(project.description);
   return {
     title: project.title,
-    description: project.description,
+    description,
     alternates: { canonical: url },
     openGraph: {
       type: "article",
       url,
       title: project.title,
-      description: project.description,
+      description,
     },
     twitter: {
       title: project.title,
-      description: project.description,
+      description,
     },
   };
 }
@@ -104,7 +107,7 @@ export default async function ProjectPage(props: { params: Promise<{ slug: strin
             </div>
           </div>
           <p className="text-lg text-slate-300 leading-relaxed max-w-2xl">
-            {project.description}
+            <InlineMarkdown>{project.description}</InlineMarkdown>
           </p>
         </div>
 

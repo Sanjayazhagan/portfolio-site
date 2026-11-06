@@ -5,6 +5,7 @@ import { GlassCard } from "@/components/ui/GlassCard";
 
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
+import { InlineMarkdown } from "@/components/ui/InlineMarkdown";
 
 interface BentoGridProps {
   activeTab: string;
@@ -47,7 +48,7 @@ export function BentoGrid({ activeTab, projects, pillars }: BentoGridProps) {
                         <ArrowUpRight size={16} />
                       </div>
                     </div>
-                    <p className="text-sm text-slate-400 leading-relaxed mb-6">{project.description}</p>
+                    <p className="text-sm text-slate-400 leading-relaxed mb-6"><InlineMarkdown>{project.description}</InlineMarkdown></p>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {project.pillars.map((p: string) => {
