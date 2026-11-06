@@ -1,26 +1,55 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import { preload } from "react-dom";
 import { motion } from "framer-motion";
 import { CodeXml, Database, Cloud, BrainCircuit } from "lucide-react";
 
+const POSTER = "/hero-poster.webp";
+const VIDEO = "/1000109720.mp4";
+
 export function Hero() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  // The poster is the LCP image, but a poster attribute is invisible to the browser's preload
+  // scanner, so hint it explicitly at high priority.
+  preload(POSTER, { as: "image", fetchPriority: "high" });
+
+  // Attach the video only after the page has loaded, so its ~1MB download doesn't compete with
+  // the poster and first paint. Reduced-motion visitors keep the still poster.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const start = () => {
+      video.src = VIDEO;
+      video.play().catch(() => {
+        // autoplay can be refused (e.g. data saver); the poster stays up
+      });
+    };
+    if (document.readyState === "complete") {
+      start();
+      return;
+    }
+    window.addEventListener("load", start, { once: true });
+    return () => window.removeEventListener("load", start);
+  }, []);
+
   return (
     <section className="relative w-screen left-1/2 -translate-x-1/2 min-h-[85vh] -mt-24 pt-24 mb-0 flex flex-col items-center justify-center text-center overflow-hidden">
       {/* Background Video with CSS Mask to fade out at the bottom */}
       <video
-        autoPlay
+        ref={videoRef}
         loop
         muted
         playsInline
-        preload="metadata"
-        poster="/hero-poster.webp"
+        preload="none"
+        poster={POSTER}
+        aria-hidden="true"
         className="absolute inset-0 w-full h-full object-cover z-0"
         style={{ 
           maskImage: "linear-gradient(to bottom, black 50%, transparent 100%)", 
           WebkitMaskImage: "linear-gradient(to bottom, black 50%, transparent 100%)" 
         }}
       >
-        <source src="/1000109720.mp4" type="video/mp4" />
       </video>
 
       {/* Dark gradient overlay to fade the top into the header and darken the video */}

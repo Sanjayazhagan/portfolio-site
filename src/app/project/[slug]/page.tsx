@@ -5,6 +5,8 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { ArrowUpRight, ExternalLink, Calendar } from "lucide-react";
 import Link from "next/link";
 import { MarkdownRenderer } from "@/components/ui/MarkdownRenderer";
+import { InlineMarkdown } from "@/components/ui/InlineMarkdown";
+import { stripMarkdown } from "@/lib/utils";
 
 const GithubIcon = ({ size = 18 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -27,6 +29,12 @@ const KaggleIcon = ({ size = 18 }: { size?: number }) => (
   </svg>
 );
 
+// Pages for new slugs are rendered on demand. Without a revalidate time Next keeps the result,
+// including a 404 for a slug visited before it existed, for a year (s-maxage=31536000). The admin
+// actions refresh the page right away; this makes it self-heal within a minute if that ever misses
+// (a project added outside the admin, a CDN that cached the 404, a restored backup).
+export const revalidate = 60;
+
 export async function generateStaticParams() {
   const projects = await getProjects();
   return projects.map((p) => ({
@@ -46,19 +54,20 @@ export async function generateMetadata(
   }
 
   const url = `/project/${project.slug}`;
+  const description = stripMarkdown(project.description);
   return {
     title: project.title,
-    description: project.description,
+    description,
     alternates: { canonical: url },
     openGraph: {
       type: "article",
       url,
       title: project.title,
-      description: project.description,
+      description,
     },
     twitter: {
       title: project.title,
-      description: project.description,
+      description,
     },
   };
 }
@@ -98,7 +107,7 @@ export default async function ProjectPage(props: { params: Promise<{ slug: strin
             </div>
           </div>
           <p className="text-lg text-slate-300 leading-relaxed max-w-2xl">
-            {project.description}
+            <InlineMarkdown>{project.description}</InlineMarkdown>
           </p>
         </div>
 
@@ -119,7 +128,7 @@ export default async function ProjectPage(props: { params: Promise<{ slug: strin
         {/* Mobile Links & Resources */}
         <div className="xl:hidden mt-12">
           <GlassCard className="p-5">
-            <h3 className="text-sm font-bold text-white mb-3 uppercase tracking-wider">Links & Resources</h3>
+            <h2 className="text-sm font-bold text-white mb-3 uppercase tracking-wider">Links & Resources</h2>
             <div className="space-y-2">
               {project.github && (
                 <a href={project.github} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-700 group">
@@ -176,7 +185,7 @@ export default async function ProjectPage(props: { params: Promise<{ slug: strin
       {/* Desktop Links & Resources - Fixed Right */}
       <div className="hidden xl:block fixed top-32 right-8 2xl:right-24 w-64 z-10">
         <GlassCard className="p-5 shadow-xl">
-          <h3 className="text-sm font-bold text-white mb-3 uppercase tracking-wider">Links & Resources</h3>
+          <h2 className="text-sm font-bold text-white mb-3 uppercase tracking-wider">Links & Resources</h2>
           <div className="space-y-2">
             {project.github && (
               <a href={project.github} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-700 group">

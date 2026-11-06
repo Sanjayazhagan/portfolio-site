@@ -90,7 +90,7 @@ export function HomeContent({ projects, pillars, experiences, logs }: { projects
     <div className="relative">
       <Hero />
       <div className="flex flex-col gap-12 w-full max-w-6xl mx-auto px-4 md:px-8">
-        <div className="flex flex-col items-center">
+        <div id="pillars" className="flex flex-col items-center scroll-mt-28">
           <PillarTabs activeTab={activeTab} setActiveTab={setActiveTab} pillars={pillars} />
         </div>
         <BentoGrid activeTab={activeTab} projects={projects} pillars={pillars} />
@@ -101,7 +101,9 @@ export function HomeContent({ projects, pillars, experiences, logs }: { projects
           Deferred via LazyMount so the 3D (three.js) bundle and its WebGL
           textures only load when the user scrolls near this section, keeping
           them off the initial load path. */}
-      <div className="mt-16 w-[100vw] relative left-1/2 -translate-x-1/2">
+      {/* The anchor lives on this always-rendered wrapper: the journey itself is lazy and
+          client-only, so an id inside it doesn't exist yet for the side nav to scroll to or observe. */}
+      <div id="journal" className="mt-16 w-[100vw] relative left-1/2 -translate-x-1/2">
         <LazyMount minHeight={700}>
           <OverallJourney pillars={pillars} allLogs={logs} />
         </LazyMount>
